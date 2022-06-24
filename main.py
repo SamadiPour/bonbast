@@ -1,4 +1,7 @@
+import pathlib
 import re
+import sys
+from typing import Optional
 
 import requests as requests
 
@@ -109,10 +112,68 @@ def get_response_from_api(token):
     return response.json()
 
 
+def get_datadir() -> pathlib.Path:
+    """
+    Returns a parent directory path
+    where persistent application data can be stored.
+
+    # linux: ~/.local/share
+    # macOS: ~/Library/Application Support
+    # windows: C:/Users/<USER>/AppData/Roaming
+    """
+
+    home = pathlib.Path.home()
+
+    if sys.platform == "win32":
+        return home / "AppData/Roaming"
+    elif sys.platform == "linux":
+        return home / ".local/share"
+    elif sys.platform == "darwin":
+        return home / "Library/Application Support"
+
+
+def get_app_directory() -> pathlib.Path:
+    """
+    Returns a directory path
+    where application data can be stored.
+    """
+
+    return get_datadir() / "bonbast"
+
+
+# save token to use later
+def save_token(token: str):
+    app_dir = get_app_directory()
+
+    try:
+        app_dir.mkdir(parents=True, exist_ok=True)
+    except FileExistsError:
+        pass
+
+    with open(app_dir / 'token.data', 'w') as f:
+        f.write(token)
+
+
+# retrieve token from storage
+def get_token() -> Optional[str]:
+    app_dir = get_app_directory()
+
+    try:
+        with open(app_dir / 'token.data', 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        return None
+
+
+# todo: handle token expiration with time and in request
 if __name__ == '__main__':
-    token = get_token_from_main_page()
+    token = get_token()
     if token is None:
-        print('Error: token not found')
-        exit(1)
+        token = get_token_from_main_page()
+        if token is None:
+            print('Error: token not found')
+            exit(1)
+        save_token(token)
+
     response = get_response_from_api(token)
     print(response)
