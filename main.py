@@ -15,7 +15,7 @@ price_formatter = "{:,}"
 base_url = 'https://www.bonbast.com'
 
 CURRENCY_VALUES = {
-    'usd': 'United States Dollar',
+    'usd': 'US Dollar',
     'eur': 'Euro',
     'gbp': 'British Pound',
     'chf': 'Swiss Franc',
