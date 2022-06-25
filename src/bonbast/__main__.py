@@ -1,3 +1,3 @@
-from src.bonbast import main
+import main
 
 main.cli_main()
