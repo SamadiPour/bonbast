@@ -1,3 +1,4 @@
+import math
 import os
 import pathlib
 import re
@@ -6,7 +7,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple, List
 
 import requests as requests
-from rich.console import Console
+from rich.console import Console, ConsoleRenderable
 from rich.table import Table
 
 price_formatter = "{:,}"
@@ -238,9 +239,8 @@ def get_prices():
         return response
 
 
-# get currencies and prices in a table
-def get_currencies_table(currencies: List[Currency]) -> Table:
-    table = Table(title="Currencies")
+def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
+    table = Table()
 
     table.add_column("Code", style="cyan", no_wrap=True)
     table.add_column("Currency", style="cyan")
@@ -258,8 +258,23 @@ def get_currencies_table(currencies: List[Currency]) -> Table:
     return table
 
 
+# get currencies and prices in a table
+def get_currencies_table(currencies: List[Currency], columns: int) -> ConsoleRenderable:
+    each_part_count = math.ceil(len(currencies) / columns)
+    currencies_parts = [currencies[i:i + each_part_count] for i in range(0, len(currencies), each_part_count)]
+    tables = [__get_currencies_sub_table(part) for part in currencies_parts]
+
+    grid = Table.grid(padding=5)
+    grid.title = 'Currencies'
+    for _ in range(columns):
+        grid.add_column()
+    grid.add_row(*tables)
+
+    return grid
+
+
 # get coins and prices in a table
-def get_coins_table(coins: List[Coin]) -> Table:
+def get_coins_table(coins: List[Coin]) -> ConsoleRenderable:
     table = Table(title="Coins")
 
     table.add_column("Coin", style="cyan")
@@ -277,7 +292,7 @@ def get_coins_table(coins: List[Coin]) -> Table:
 
 
 # get gold and it's price in a table
-def get_gold_table(golds: List[Gold]) -> Table:
+def get_gold_table(golds: List[Gold]) -> ConsoleRenderable:
     table = Table(title="Gold")
 
     table.add_column("Gold", style="cyan")
@@ -328,7 +343,7 @@ if __name__ == '__main__':
     data = get_prices()
     currencies_list, coins_list, golds_list = parse_price_data(data)
 
-    currencies_table = get_currencies_table(currencies_list)
+    currencies_table = get_currencies_table(currencies_list, 2)
     coins_table = get_coins_table(coins_list)
     gold_table = get_gold_table(golds_list)
 
