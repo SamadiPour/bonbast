@@ -339,7 +339,7 @@ def parse_price_data(data: dict) -> Tuple[List[Currency], List[Coin], List[Gold]
     return currencies, coins, golds
 
 
-if __name__ == '__main__':
+def cli_main():
     data = get_prices()
     currencies_list, coins_list, golds_list = parse_price_data(data)
 
@@ -349,3 +349,8 @@ if __name__ == '__main__':
 
     console = Console()
     console.print(currencies_table, coins_table, gold_table)
+
+
+if __name__ == '__main__':
+    cli_main()
+
