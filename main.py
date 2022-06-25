@@ -6,6 +6,10 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
 import requests as requests
+from rich.console import Console
+from rich.table import Table
+
+price_formatter = "{:,}"
 
 base_url = 'https://www.bonbast.com'
 
@@ -48,7 +52,7 @@ coins = {
     'azadi1_4': '¼ Azadi',
 }
 
-gold = {
+golds = {
     'mithqal': 'Gold Mithqal',
     'gol18': 'Gold Gram',
 }
@@ -213,6 +217,69 @@ def get_prices():
         return response
 
 
+# get currencies and prices in a table
+def get_currencies_table(data: dict) -> Table:
+    table = Table(title="Currencies")
+
+    table.add_column("Code", style="cyan", no_wrap=True)
+    table.add_column("Currency", style="cyan")
+    table.add_column("Buy", style="green", no_wrap=True)
+    table.add_column("Sell", style="green", no_wrap=True)
+
+    for currency in currencies:
+        if f'{currency}{buy}' in data and f'{currency}{sell}' in data:
+            table.add_row(
+                currency.upper(),
+                currencies[currency],
+                price_formatter.format(int(data[f'{currency}{buy}'])),
+                price_formatter.format(int(data[f'{currency}{sell}'])),
+            )
+
+    return table
+
+
+# get coins and prices in a table
+def get_coins_table(data: dict) -> Table:
+    table = Table(title="Coins")
+
+    table.add_column("Coin", style="cyan")
+    table.add_column("Buy", style="green", no_wrap=True)
+    table.add_column("Sell", style="green", no_wrap=True)
+
+    for coin in coins:
+        if f'{coin}' in data and f'{coin}{sell}' in data:
+            table.add_row(
+                coins[coin],
+                price_formatter.format(int(data[f'{coin}'])),
+                price_formatter.format(int(data[f'{coin}{sell}'])),
+            )
+
+    return table
+
+
+# get gold and it's price in a table
+def get_gold_table(data: dict) -> Table:
+    table = Table(title="Gold")
+
+    table.add_column("Gold", style="cyan")
+    table.add_column("Price", style="green", no_wrap=True)
+
+    for gold in golds:
+        if f'{gold}' in data:
+            table.add_row(
+                golds[gold],
+                price_formatter.format(int(data[f'{gold}'])),
+            )
+
+    return table
+
+
 if __name__ == '__main__':
     data = get_prices()
-    print(data)
+
+    currencies_table = get_currencies_table(data)
+    coins_table = get_coins_table(data)
+    gold_table = get_gold_table(data)
+
+    console = Console()
+    console.print(currencies_table, coins_table, gold_table)
