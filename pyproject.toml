@@ -27,7 +27,7 @@ requires-python = ">=3.7"
 
 [project.optional-dependencies]
 build = ["build", "twine"]
-dev = ["black", "bumpver", "pytest"]
+dev = ["bumpver", "pytest"]
 
 [project.scripts]
 realpython = "bonbast.__main__:main"
