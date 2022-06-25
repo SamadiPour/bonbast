@@ -3,7 +3,7 @@ import pathlib
 import re
 import sys
 from datetime import datetime, timedelta
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 import requests as requests
 from rich.console import Console
@@ -13,7 +13,7 @@ price_formatter = "{:,}"
 
 base_url = 'https://www.bonbast.com'
 
-currencies = {
+CURRENCY_VALUES = {
     'usd': 'United States Dollar',
     'eur': 'Euro',
     'gbp': 'British Pound',
@@ -44,7 +44,7 @@ currencies = {
     'qar': 'Qatari Rial',
 }
 
-coins = {
+COIN_VALUES = {
     'emami1': 'Emami',
     'azadi1g': 'Gerami',
     'azadi1': 'Azadi',
@@ -52,13 +52,34 @@ coins = {
     'azadi1_4': '¼ Azadi',
 }
 
-golds = {
+GOLD_VALUES = {
     'mithqal': 'Gold Mithqal',
     'gol18': 'Gold Gram',
 }
 
 buy = '1'
 sell = '2'
+
+
+class Currency:
+    def __init__(self, code: str, name: str, buy: int, sell: int):
+        self.code = code
+        self.name = name
+        self.buy = buy
+        self.sell = sell
+
+
+class Coin:
+    def __init__(self, name: str, buy: int, sell: int):
+        self.name = name
+        self.buy = buy
+        self.sell = sell
+
+
+class Gold:
+    def __init__(self, name: str, price: float):
+        self.name = name
+        self.price = price
 
 
 # get the token from the main page of bonbast.com
@@ -218,7 +239,7 @@ def get_prices():
 
 
 # get currencies and prices in a table
-def get_currencies_table(data: dict) -> Table:
+def get_currencies_table(currencies: List[Currency]) -> Table:
     table = Table(title="Currencies")
 
     table.add_column("Code", style="cyan", no_wrap=True)
@@ -227,19 +248,18 @@ def get_currencies_table(data: dict) -> Table:
     table.add_column("Sell", style="green", no_wrap=True)
 
     for currency in currencies:
-        if f'{currency}{buy}' in data and f'{currency}{sell}' in data:
-            table.add_row(
-                currency.upper(),
-                currencies[currency],
-                price_formatter.format(int(data[f'{currency}{buy}'])),
-                price_formatter.format(int(data[f'{currency}{sell}'])),
-            )
+        table.add_row(
+            currency.code,
+            currency.name,
+            price_formatter.format(currency.buy),
+            price_formatter.format(currency.sell),
+        )
 
     return table
 
 
 # get coins and prices in a table
-def get_coins_table(data: dict) -> Table:
+def get_coins_table(coins: List[Coin]) -> Table:
     table = Table(title="Coins")
 
     table.add_column("Coin", style="cyan")
@@ -247,39 +267,70 @@ def get_coins_table(data: dict) -> Table:
     table.add_column("Sell", style="green", no_wrap=True)
 
     for coin in coins:
-        if f'{coin}' in data and f'{coin}{sell}' in data:
-            table.add_row(
-                coins[coin],
-                price_formatter.format(int(data[f'{coin}'])),
-                price_formatter.format(int(data[f'{coin}{sell}'])),
-            )
+        table.add_row(
+            coin.name,
+            price_formatter.format(coin.buy),
+            price_formatter.format(coin.sell),
+        )
 
     return table
 
 
 # get gold and it's price in a table
-def get_gold_table(data: dict) -> Table:
+def get_gold_table(golds: List[Gold]) -> Table:
     table = Table(title="Gold")
 
     table.add_column("Gold", style="cyan")
     table.add_column("Price", style="green", no_wrap=True)
 
     for gold in golds:
-        if f'{gold}' in data:
-            table.add_row(
-                golds[gold],
-                price_formatter.format(int(data[f'{gold}'])),
-            )
+        table.add_row(
+            gold.name,
+            price_formatter.format(gold.price),
+        )
 
     return table
 
 
+def parse_price_data(data: dict) -> Tuple[List[Currency], List[Coin], List[Gold]]:
+    currencies: List[Currency] = []
+    coins: List[Coin] = []
+    golds: List[Gold] = []
+
+    for currency in CURRENCY_VALUES:
+        if f'{currency}{buy}' in data and f'{currency}{sell}' in data:
+            currencies.append(Currency(
+                currency.upper(),
+                CURRENCY_VALUES[currency],
+                int(data[f'{currency}{buy}']),
+                int(data[f'{currency}{sell}']),
+            ))
+
+    for coin in COIN_VALUES:
+        if f'{coin}' in data and f'{coin}{sell}' in data:
+            coins.append(Coin(
+                coin,
+                int(data[coin]),
+                int(data[f'{coin}{sell}']),
+            ))
+
+    for gold in GOLD_VALUES:
+        if f'{gold}' in data:
+            golds.append(Gold(
+                gold,
+                int(data[gold])
+            ))
+
+    return currencies, coins, golds
+
+
 if __name__ == '__main__':
     data = get_prices()
+    currencies_list, coins_list, golds_list = parse_price_data(data)
 
-    currencies_table = get_currencies_table(data)
-    coins_table = get_coins_table(data)
-    gold_table = get_gold_table(data)
+    currencies_table = get_currencies_table(currencies_list)
+    coins_table = get_coins_table(coins_list)
+    gold_table = get_gold_table(golds_list)
 
     console = Console()
     console.print(currencies_table, coins_table, gold_table)
