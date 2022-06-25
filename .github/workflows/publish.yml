@@ -1,0 +1,27 @@
+name: publish
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  publish:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install requirements
+      run: |
+        make install-requirements
+    - name: Publish
+      run: |
+        make build
+        python -m twine upload dist/* -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
+
+    name: Publish

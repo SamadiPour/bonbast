@@ -8,8 +8,5 @@ clean:
 build: clean
 	@$(PY) setup.py sdist bdist_wheel
 
-publish:
-	@$(PY) -m twine upload dist/*
-
 install-requirements:
 	@$(PY) -m pip install -r requirements.txt
