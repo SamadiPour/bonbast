@@ -23,6 +23,9 @@ jobs:
         python -m pip install '.[build]'
 
     - name: Build & Publish
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python -m build
-        python -m twine upload dist/* -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
+        python -m twine upload dist/*
