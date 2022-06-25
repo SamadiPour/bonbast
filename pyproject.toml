@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bonbast"
+version = "0.0.1"
+description = "Get currencies exchange rates for IRR from Bonbast.com"
+readme = "README.md"
+authors = [
+    { name = "Amir Hossein SamadiPour", email = "samadipoor2@gmail.com" },
+    { name = "Alireza Azadi", email = "alireza_azadi@hotmail.com" },
+    { name = "Iliya Aghamajidi", email = "dozheiny@gmail.com" },
+]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["bonbast", "IRR Exchange rates"]
+dependencies = [
+    "requests >= 2.28.0",
+    "rich >= 12.4.4",
+]
+requires-python = ">=3.7"
+
+[project.optional-dependencies]
+build = ["build", "twine"]
+dev = ["black", "bumpver", "pytest"]
+
+[project.scripts]
+realpython = "bonbast.__main__:main"
+
+[project.urls]
+repository = "https://github.com/SamadiPour/bonbast"
+#documentation = ""
+
+
+[tool.bumpver]
+current_version = "0.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"',
+]
+"src/bonbast/__init__.py" = ["{version}"]
