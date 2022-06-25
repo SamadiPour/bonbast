@@ -10,6 +10,7 @@
 .history/
 
 .idea
+.pypirc
 
 ### Python template
 # Byte-compiled / optimized / DLL files
