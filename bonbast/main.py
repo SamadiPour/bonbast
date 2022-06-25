@@ -10,6 +10,8 @@ import requests as requests
 from rich.console import Console, ConsoleRenderable
 from rich.table import Table
 
+VERSION = '0.0.1-dev0'
+
 price_formatter = "{:,}"
 
 base_url = 'https://www.bonbast.com'
