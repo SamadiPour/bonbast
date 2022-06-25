@@ -1,4 +1,4 @@
-.PHONY := clean build publish install-requrements
+.PHONY := clean build install-requrements
 .DEFAULT_GOAL := all
 PY = $(shell which python3)
 
