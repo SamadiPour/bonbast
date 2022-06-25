@@ -25,5 +25,7 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
+        "requests >= 2.28.0",
+        "rich >= 12.4.4",
     ]
 )
