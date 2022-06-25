@@ -6,7 +6,7 @@ import sys
 from datetime import datetime, timedelta
 from typing import Optional, Tuple, List
 
-import requests as requests
+import requests
 from rich.console import Console, ConsoleRenderable
 from rich.table import Table
 

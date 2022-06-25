@@ -1,9 +1,9 @@
-from src.bonbast.main import cli_main
+from bonbast import main
 
 
-def main() -> None:
-    cli_main()
+def run() -> None:
+    main.cli_main()
 
 
 if __name__ == "__main__":
-    main()
+    run()
