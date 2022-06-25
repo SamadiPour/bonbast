@@ -1,7 +1,9 @@
+import os
 import pathlib
 import re
 import sys
-from typing import Optional
+from datetime import datetime, timedelta
+from typing import Optional, Tuple
 
 import requests as requests
 
@@ -75,16 +77,21 @@ def get_token_from_main_page():
         'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36',
     }
 
-    response = requests.get(base_url, headers=headers)
-    search = re.search("\$\.post\('/json',{\s*data:\"(.+)\"", response.text, re.MULTILINE)
-    if search is None:
-        print('Error: token not found')
-        return None
+    try:
+        r = requests.get(base_url, headers=headers)
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        raise SystemExit(err)
+
+    search = re.search("\$\.post\('/json',{\s*data:\"(.+)\"", r.text, re.MULTILINE)
+    if search is None or search.group(1) is None:
+        raise SystemExit('Error: token not found in the main page')
+
     return search.group(1)
 
 
 # get response by using token acquired from main page
-def get_response_from_api(token):
+def get_prices_from_api(token):
     headers = {
         'authority': 'bonbast.com',
         'accept': 'application/json, text/javascript, */*; q=0.01',
@@ -108,8 +115,13 @@ def get_response_from_api(token):
         'webdriver': 'false',
     }
 
-    response = requests.post(f'{base_url}/json', headers=headers, data=data)
-    return response.json()
+    try:
+        r = requests.post(f'{base_url}/json', headers=headers, data=data)
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        raise SystemExit(err)
+
+    return r.json()
 
 
 def get_datadir() -> pathlib.Path:
@@ -142,7 +154,7 @@ def get_app_directory() -> pathlib.Path:
 
 
 # save token to use later
-def save_token(token: str):
+def save_token(token: str, date: datetime) -> None:
     app_dir = get_app_directory()
 
     try:
@@ -151,29 +163,56 @@ def save_token(token: str):
         pass
 
     with open(app_dir / 'token.data', 'w') as f:
-        f.write(token)
+        f.write(f'{token}\n{date.isoformat()}')
 
 
 # retrieve token from storage
-def get_token() -> Optional[str]:
+def get_token() -> Tuple[Optional[str], Optional[datetime]]:
     app_dir = get_app_directory()
 
     try:
         with open(app_dir / 'token.data', 'r') as f:
-            return f.read()
+            token, date = f.read().splitlines()
+            return token, datetime.fromisoformat(date)
     except FileNotFoundError:
-        return None
+        return None, None
 
 
-# todo: handle token expiration with time and in request
-if __name__ == '__main__':
-    token = get_token()
-    if token is None:
+# delete saved token
+def delete_token():
+    app_dir = get_app_directory()
+
+    try:
+        os.remove(app_dir / 'token.data')
+    except FileNotFoundError:
+        pass
+
+
+def get_prices():
+    # get token from storage
+    # check if token's time and make sure it's not expired
+    token, token_date = get_token()
+    if token is not None:
+        # token will expire in 10 minutes
+        # if expired, delete it and get a new one
+        if datetime.now() - token_date > timedelta(minutes=9, seconds=45):
+            delete_token()
+            return get_prices()
+    else:
+        # if we don't have a token, we will get it from the main page
         token = get_token_from_main_page()
-        if token is None:
-            print('Error: token not found')
-            exit(1)
-        save_token(token)
+        save_token(token, datetime.now())
 
-    response = get_response_from_api(token)
-    print(response)
+    # get prices from the api with the token acquired from main page
+    response = get_prices_from_api(token)
+    if 'reset' in response:
+        # if we got a reset response, delete the token and get a new one
+        delete_token()
+        return get_prices()
+    else:
+        return response
+
+
+if __name__ == '__main__':
+    data = get_prices()
+    print(data)
