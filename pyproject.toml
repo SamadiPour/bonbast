@@ -30,7 +30,7 @@ build = ["build", "twine"]
 dev = ["bumpver", "pytest"]
 
 [project.scripts]
-realpython = "bonbast.__main__:main"
+bonbast = "bonbast.__main__:run"
 
 [project.urls]
 repository = "https://github.com/SamadiPour/bonbast"
