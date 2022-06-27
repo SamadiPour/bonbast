@@ -66,11 +66,11 @@ def parse_price_data(data: dict) -> Tuple[List[Currency], List[Coin], List[Gold]
             ))
 
     for coin in Coin.COIN_VALUES:
-        if f'{coin}' in data and f'{coin}{sell}' in data:
+        if f'{coin}' in data and f'{coin}{SELL}' in data:
             coins.append(Coin(
                 Coin.COIN_VALUES[coin],
                 int(data[coin]),
-                int(data[f'{coin}{sell}']),
+                int(data[f'{coin}{SELL}']),
             ))
 
     for gold in Gold.GOLD_VALUES:
