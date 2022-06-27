@@ -49,6 +49,15 @@ class Currency:
     def formatted_sell(self) -> str:
         return PRICE_FORMATTER.format(self.sell)
 
+    def to_json(self) -> dict:
+        return {
+            self.code: {
+                'name': self.name,
+                'buy': self.buy,
+                'sell': self.sell,
+            }
+        }
+
 
 class Coin:
     """ Coin model
@@ -61,7 +70,8 @@ class Coin:
         'azadi1_4': '¼ Azadi',
     }
 
-    def __init__(self, name: str, buy: int, sell: int):
+    def __init__(self, code: str, name: str, buy: int, sell: int):
+        self.code = code
         self.name = name
         self.buy = buy
         self.sell = sell
@@ -74,6 +84,15 @@ class Coin:
     def formatted_sell(self) -> str:
         return PRICE_FORMATTER.format(self.sell)
 
+    def to_json(self) -> dict:
+        return {
+            self.code: {
+                'name': self.name,
+                'buy': self.buy,
+                'sell': self.sell,
+            }
+        }
+
 
 class Gold:
     """ Gold model
@@ -83,10 +102,19 @@ class Gold:
         'gol18': 'Gold Gram',
     }
 
-    def __init__(self, name: str, price: float):
+    def __init__(self, code: str, name: str, price: float):
+        self.code = code
         self.name = name
         self.price = price
 
     @property
     def formatted_price(self) -> str:
         return PRICE_FORMATTER.format(self.price)
+
+    def to_json(self) -> dict:
+        return {
+            self.code: {
+                'name': self.name,
+                'price': self.price,
+            }
+        }
