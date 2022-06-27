@@ -10,9 +10,11 @@ import requests
 from rich.console import Console, ConsoleRenderable
 from rich.table import Table
 
+from server import get_token_from_main_page, get_prices_from_api
+
+
 price_formatter = "{:,}"
 
-base_url = 'https://www.bonbast.com'
 
 CURRENCY_VALUES = {
     'usd': 'US Dollar',
@@ -83,71 +85,10 @@ class Gold:
         self.price = price
 
 
-# get the token from the main page of bonbast.com
-def get_token_from_main_page():
-    headers = {
-        'authority': 'bonbast.com',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'accept-language': 'en-US,en;q=0.9,fa;q=0.8',
-        'cache-control': 'no-cache',
-        'cookie': 'cookieconsent_status=true; st_bb=0',
-        'pragma': 'no-cache',
-        'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
-        'sec-ch-ua-mobile': '?1',
-        'sec-ch-ua-platform': '"Android"',
-        'sec-fetch-dest': 'document',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-site': 'none',
-        'sec-fetch-user': '?1',
-        'upgrade-insecure-requests': '1',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36',
-    }
-
-    try:
-        r = requests.get(base_url, headers=headers)
-        r.raise_for_status()
-    except requests.exceptions.HTTPError as err:
-        raise SystemExit(err)
-
-    search = re.search("\$\.post\('/json',{\s*data:\"(.+)\"", r.text, re.MULTILINE)
-    if search is None or search.group(1) is None:
-        raise SystemExit('Error: token not found in the main page')
-
-    return search.group(1)
 
 
-# get response by using token acquired from main page
-def get_prices_from_api(token):
-    headers = {
-        'authority': 'bonbast.com',
-        'accept': 'application/json, text/javascript, */*; q=0.01',
-        'accept-language': 'en-US,en;q=0.9,fa;q=0.8',
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'cookie': 'cookieconsent_status=true; st_bb=0',
-        'origin': 'https://bonbast.com',
-        'referer': 'https://bonbast.com/',
-        'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
-        'sec-ch-ua-mobile': '?1',
-        'sec-ch-ua-platform': '"Android"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Mobile Safari/537.36',
-        'x-requested-with': 'XMLHttpRequest',
-    }
 
-    data = {
-        'data': token,
-        'webdriver': 'false',
-    }
 
-    try:
-        r = requests.post(f'{base_url}/json', headers=headers, data=data)
-        r.raise_for_status()
-    except requests.exceptions.HTTPError as err:
-        raise SystemExit(err)
-
-    return r.json()
 
 
 def get_datadir() -> pathlib.Path:
