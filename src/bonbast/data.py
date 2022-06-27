@@ -1,3 +1,6 @@
+PRICE_FORMATTER = "{:,}"
+
+
 class Currency:
     """ Currency model
     """
@@ -38,6 +41,14 @@ class Currency:
         self.buy = buy
         self.sell = sell
 
+    @property
+    def formatted_buy(self) -> str:
+        return PRICE_FORMATTER.format(self.buy)
+
+    @property
+    def formatted_sell(self) -> str:
+        return PRICE_FORMATTER.format(self.sell)
+
 
 class Coin:
     """ Coin model
@@ -55,6 +66,14 @@ class Coin:
         self.buy = buy
         self.sell = sell
 
+    @property
+    def formatted_buy(self) -> str:
+        return PRICE_FORMATTER.format(self.buy)
+
+    @property
+    def formatted_sell(self) -> str:
+        return PRICE_FORMATTER.format(self.sell)
+
 
 class Gold:
     """ Gold model
@@ -67,3 +86,7 @@ class Gold:
     def __init__(self, name: str, price: float):
         self.name = name
         self.price = price
+
+    @property
+    def formatted_price(self) -> str:
+        return PRICE_FORMATTER.format(self.price)

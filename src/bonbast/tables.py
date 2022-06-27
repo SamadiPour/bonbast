@@ -10,9 +10,6 @@ except:
     from data import Currency, Coin, Gold
 
 
-PRICE_FORMATTER = "{:,}"
-
-
 def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
     table = Table()
 
@@ -25,8 +22,8 @@ def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
         table.add_row(
             currency.code,
             currency.name,
-            PRICE_FORMATTER.format(currency.buy),
-            PRICE_FORMATTER.format(currency.sell),
+            currency.formatted_buy,
+            currency.formatted_sell,
         )
 
     return table
@@ -60,8 +57,8 @@ def get_coins_table(coins: List[Coin]) -> ConsoleRenderable:
     for coin in coins:
         table.add_row(
             coin.name,
-            PRICE_FORMATTER.format(coin.buy),
-            PRICE_FORMATTER.format(coin.sell),
+            coin.formatted_buy,
+            coin.formatted_sell,
         )
 
     return table
@@ -79,7 +76,7 @@ def get_gold_table(golds: List[Gold]) -> ConsoleRenderable:
     for gold in golds:
         table.add_row(
             gold.name,
-            PRICE_FORMATTER.format(gold.price),
+            gold.formatted_price,
         )
 
     return table
