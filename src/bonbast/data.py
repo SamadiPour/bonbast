@@ -1,7 +1,7 @@
 class Currency:
     """ Currency model
     """
-    CURRENCY_VALUES = {
+    VALUES = {
         'usd': 'US Dollar',
         'eur': 'Euro',
         'gbp': 'British Pound',
@@ -42,7 +42,7 @@ class Currency:
 class Coin:
     """ Coin model
     """
-    COIN_VALUES = {
+    VALUES = {
         'emami1': 'Emami',
         'azadi1g': 'Gerami',
         'azadi1': 'Azadi',
@@ -59,7 +59,7 @@ class Coin:
 class Gold:
     """ Gold model
     """
-    GOLD_VALUES = {
+    VALUES = {
         'mithqal': 'Gold Mithqal',
         'gol18': 'Gold Gram',
     }
