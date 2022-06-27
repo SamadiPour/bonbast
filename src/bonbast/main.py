@@ -10,80 +10,21 @@ import requests
 from rich.console import Console, ConsoleRenderable
 from rich.table import Table
 
-from server import get_token_from_main_page, get_prices_from_api
-from datadir import save_token, get_token, delete_token
+try:
+    from .server import get_token_from_main_page, get_prices_from_api
+    from .datadir import save_token, get_token, delete_token
+    from .data import Currency, Coin, Gold
+except:
+    from server import get_token_from_main_page, get_prices_from_api
+    from datadir import save_token, get_token, delete_token
+    from data import Currency, Coin, Gold
 
 
 price_formatter = "{:,}"
 
 
-CURRENCY_VALUES = {
-    'usd': 'US Dollar',
-    'eur': 'Euro',
-    'gbp': 'British Pound',
-    'chf': 'Swiss Franc',
-    'cad': 'Canadian Dollar',
-    'aud': 'Australian Dollar',
-    'sek': 'Swedish Krona',
-    'nok': 'Norwegian Krone',
-    'rub': 'Russian Ruble',
-    'thb': 'Thai Baht',
-    'sgd': 'Singapore Dollar',
-    'hkd': 'Hong Kong Dollar',
-    'azn': 'Azerbaijani Manat',
-    'amd': '10 Armenian Dram',
-    'dkk': 'Danish Krone',
-    'aed': 'UAE Dirham',
-    'jpy': '10 Japanese Yen',
-    'try': 'Turkish Lira',
-    'cny': 'Chinese Yuan',
-    'sar': 'Saudi Riyal',
-    'inr': 'Indian Rupee',
-    'myr': 'Malaysian Ringgit',
-    'afn': 'Afghan Afghani',
-    'kwd': 'Kuwaiti Dinar',
-    'iqd': '100 Iraqi Dinar',
-    'bhd': 'Bahraini Dinar',
-    'omr': 'Omani Rial',
-    'qar': 'Qatari Rial',
-}
-
-COIN_VALUES = {
-    'emami1': 'Emami',
-    'azadi1g': 'Gerami',
-    'azadi1': 'Azadi',
-    'azadi1_2': '½ Azadi',
-    'azadi1_4': '¼ Azadi',
-}
-
-GOLD_VALUES = {
-    'mithqal': 'Gold Mithqal',
-    'gol18': 'Gold Gram',
-}
-
-buy = '1'
-sell = '2'
-
-
-class Currency:
-    def __init__(self, code: str, name: str, buy: int, sell: int):
-        self.code = code
-        self.name = name
-        self.buy = buy
-        self.sell = sell
-
-
-class Coin:
-    def __init__(self, name: str, buy: int, sell: int):
-        self.name = name
-        self.buy = buy
-        self.sell = sell
-
-
-class Gold:
-    def __init__(self, name: str, price: float):
-        self.name = name
-        self.price = price
+BUY = '1'
+SELL = '2'
 
 
 def get_prices():
@@ -184,27 +125,27 @@ def parse_price_data(data: dict) -> Tuple[List[Currency], List[Coin], List[Gold]
     coins: List[Coin] = []
     golds: List[Gold] = []
 
-    for currency in CURRENCY_VALUES:
-        if f'{currency}{buy}' in data and f'{currency}{sell}' in data:
+    for currency in Currency.CURRENCY_VALUES:
+        if f'{currency}{BUY}' in data and f'{currency}{SELL}' in data:
             currencies.append(Currency(
                 currency.upper(),
-                CURRENCY_VALUES[currency],
-                int(data[f'{currency}{buy}']),
-                int(data[f'{currency}{sell}']),
+                Currency.CURRENCY_VALUES[currency],
+                int(data[f'{currency}{BUY}']),
+                int(data[f'{currency}{SELL}']),
             ))
 
-    for coin in COIN_VALUES:
+    for coin in Coin.COIN_VALUES:
         if f'{coin}' in data and f'{coin}{sell}' in data:
             coins.append(Coin(
-                COIN_VALUES[coin],
+                Coin.COIN_VALUES[coin],
                 int(data[coin]),
                 int(data[f'{coin}{sell}']),
             ))
 
-    for gold in GOLD_VALUES:
+    for gold in Gold.GOLD_VALUES:
         if f'{gold}' in data:
             golds.append(Gold(
-                GOLD_VALUES[gold],
+                Gold.GOLD_VALUES[gold],
                 int(data[gold])
             ))
 
