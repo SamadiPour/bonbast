@@ -6,30 +6,28 @@ from datetime import datetime
 from typing import Optional, Tuple, List
 
 
-def get_datadir() -> pathlib.Path:
-    """ Returns a parent directory path
-    where persistent application data can be stored.
+def get_app_directory() -> pathlib.Path:
+    """ Returns a directory path
+    data directory is where persistent application data can be stored.
+    - linux: ~/.local/share
+    - macOS: ~/Library/Application Support
+    - windows: C:/Users/<USER>/AppData/Roaming
 
-    # linux: ~/.local/share
-    # macOS: ~/Library/Application Support
-    # windows: C:/Users/<USER>/AppData/Roaming
+    the final directory is where application data can be stored.
     """
+
     home = pathlib.Path.home()
 
     if sys.platform == "win32":
-        return home / "AppData/Roaming"
+        data_dir = home / "AppData/Roaming"
     elif sys.platform == "linux":
-        return home / ".local/share"
+        data_dir = home / ".local/share"
     elif sys.platform == "darwin":
-        return home / "Library/Application Support"
+        data_dir = home / "Library/Application Support"
+    else:
+        raise NotImplementedError(f"Platform {sys.platform} is not supported")
 
-
-def get_app_directory() -> pathlib.Path:
-    """ Returns a directory path
-    where application data can be stored.
-    """
-
-    return get_datadir() / "bonbast"
+    return data_dir / "bonbast"
 
 
 def save_token(token: str, date: datetime) -> None:
