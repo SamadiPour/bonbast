@@ -1,23 +1,16 @@
-import math
-import os
-import pathlib
-import re
-import sys
 from datetime import datetime, timedelta
-from typing import Optional, Tuple, List
+from typing import Tuple, List
 
-import requests
-from rich.console import Console, ConsoleRenderable
-from rich.table import Table
+from rich.console import Console
 
 try:
     from .server import get_token_from_main_page, get_prices_from_api
-    from .datadir import save_token, get_token, delete_token
+    from .storage_manager import StorageManager
     from .data import Currency, Coin, Gold
     from .tables import get_currencies_table, get_coins_table, get_gold_table
 except:
     from server import get_token_from_main_page, get_prices_from_api
-    from datadir import save_token, get_token, delete_token
+    from storage_manager import StorageManager
     from data import Currency, Coin, Gold
     from tables import get_currencies_table, get_coins_table, get_gold_table
 
@@ -29,23 +22,23 @@ SELL = '2'
 def get_prices():
     # get token from storage
     # check if token's time and make sure it's not expired
-    token, token_date = get_token()
+    token, token_date = StorageManager().get_token()
     if token is not None:
         # token will expire in 10 minutes
         # if expired, delete it and get a new one
         if datetime.now() - token_date > timedelta(minutes=9, seconds=45):
-            delete_token()
+            StorageManager().delete_token()
             return get_prices()
     else:
         # if we don't have a token, we will get it from the main page
         token = get_token_from_main_page()
-        save_token(token, datetime.now())
+        StorageManager().save_token(token, datetime.now())
 
     # get prices from the api with the token acquired from main page
     response = get_prices_from_api(token)
     if 'reset' in response:
         # if we got a reset response, delete the token and get a new one
-        delete_token()
+        StorageManager().delete_token()
         return get_prices()
     else:
         return response
