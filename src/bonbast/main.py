@@ -1,3 +1,4 @@
+import argparse
 from datetime import datetime, timedelta
 from typing import Tuple, List
 
@@ -79,15 +80,42 @@ def parse_price_data(data: dict) -> Tuple[List[Currency], List[Coin], List[Gold]
 
 
 def cli_main():
+    parser = argparse.ArgumentParser(description='See bonbast.com prices in your command line!')
+
+    parser.add_argument('--only-currencies', dest='only_currencies', action="store_true",
+        help='Only show currencies table')
+    parser.add_argument('--only-coins', dest='only_coins', action="store_true",
+        help='Only show coins table')
+    parser.add_argument('--only-golds', dest='only_golds', action="store_true",
+        help='Only show golds table')
+    parser.add_argument('--json', dest='json', action="store_true",
+        help='Print json output received from server')
+
+    args = parser.parse_args()
+
     data = get_prices()
+    if args.json:
+        print(data)
+        return
+
     currencies_list, coins_list, golds_list = parse_price_data(data)
 
-    currencies_table = get_currencies_table(currencies_list, 2)
-    coins_table = get_coins_table(coins_list)
-    gold_table = get_gold_table(golds_list)
-
     console = Console()
-    console.print(currencies_table, coins_table, gold_table)
+
+    # if none of these flags are sent, show all of tables
+    show_all_tables = not args.only_currencies and not args.only_coins and not args.only_golds
+
+    if show_all_tables or args.only_currencies:
+        currencies_table = get_currencies_table(currencies_list, 2)
+        console.print(currencies_table)
+
+    if show_all_tables or args.only_coins:
+        coins_table = get_coins_table(coins_list)
+        console.print(coins_table)
+
+    if show_all_tables or args.only_golds:
+        gold_table = get_gold_table(golds_list)
+        console.print(gold_table)
 
 
 if __name__ == '__main__':
