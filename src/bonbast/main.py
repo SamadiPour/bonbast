@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from rich.console import Console
+import click
 
 try:
     from .server import *
@@ -36,16 +37,19 @@ def get_prices():
         return response
 
 
-def cli_main():
-    currencies_list, coins_list, golds_list = get_prices()
+@click.group(invoke_without_command=True)
+@click.pass_context
+def cli(ctx):
+    if ctx.invoked_subcommand is None:
+        currencies_list, coins_list, golds_list = get_prices()
 
-    currencies_table = get_currencies_table(currencies_list, 2)
-    coins_table = get_coins_table(coins_list)
-    gold_table = get_gold_table(golds_list)
+        currencies_table = get_currencies_table(currencies_list, 2)
+        coins_table = get_coins_table(coins_list)
+        gold_table = get_gold_table(golds_list)
 
-    console = Console()
-    console.print(currencies_table, coins_table, gold_table)
+        console = Console()
+        console.print(currencies_table, coins_table, gold_table)
 
 
 if __name__ == '__main__':
-    cli_main()
+    cli()
