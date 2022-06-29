@@ -1,12 +1,15 @@
 import re
+from datetime import datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
 
 BASE_URL = 'https://www.bonbast.com'
+USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
+             'Chrome/103.0.0.0 Mobile Safari/537.36'
 
 
-def get_token_from_main_page(dont_raise_error=False):
+def get_token_from_main_page():
     """ This function gets a token from main page of bonbast.com
     This token should be saved somewhere because we are going to need it when we want to load pricest
 
@@ -28,28 +31,23 @@ def get_token_from_main_page(dont_raise_error=False):
         'sec-fetch-site': 'none',
         'sec-fetch-user': '?1',
         'upgrade-insecure-requests': '1',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/103.0.0.0 Mobile Safari/537.36',
+        'user-agent': USER_AGENT,
     }
 
     try:
         r = requests.get(BASE_URL, headers=headers)
         r.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        if dont_raise_error:
-            return False
         raise SystemExit(err)
 
-    search = re.search("\$\.post\('/json',{\s*data:\"(.+)\"", r.text, re.MULTILINE)
+    search = re.search(r"\$\.post\('/json',{\s*data:\"(.+)\"", r.text, re.MULTILINE)
     if search is None or search.group(1) is None:
-        if dont_raise_error:
-            return False
         raise SystemExit('Error: token not found in the main page')
 
     return search.group(1)
 
 
-def get_prices_from_api(token, dont_raise_error=False):
+def get_prices_from_api(token: str):
     """ Gets the prices' data from API using
 
     param token: You should pass the token that you got from get_token_from_main_page
@@ -71,8 +69,7 @@ def get_prices_from_api(token, dont_raise_error=False):
         'sec-fetch-dest': 'empty',
         'sec-fetch-mode': 'cors',
         'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/103.0.0.0 Mobile Safari/537.36',
+        'user-agent': USER_AGENT,
         'x-requested-with': 'XMLHttpRequest',
     }
 
@@ -85,66 +82,58 @@ def get_prices_from_api(token, dont_raise_error=False):
         r = requests.post(f'{BASE_URL}/json', headers=headers, data=data)
         r.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        if dont_raise_error:
-            return False
         raise SystemExit(err)
 
     return r.json()
 
 
-def get_graph_data(start_date, end_date, currency, dont_raise_error=False):
+def get_graph_data(
+        currency: str,
+        start_date: datetime = datetime.today() - timedelta(days=30),
+        end_date: datetime = datetime.today(),
+) -> dict[str, int]:
     """
         This function will make a request to bonbast.com/graph and make them in two array.
     """
 
     headers = {
         'authority': 'bonbast.com',
-        'accept': 'application/json, text/javascript, */*; q=0.01',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'accept-language': 'en-US,en;q=0.9,fa;q=0.8',
-        'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'cache-control': 'max-age=0',
         'cookie': 'cookieconsent_status=true; st_bb=0',
-        'origin': 'https://bonbast.com',
         'referer': 'https://bonbast.com/',
         'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
         'sec-ch-ua-mobile': '?1',
         'sec-ch-ua-platform': '"Android"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
         'sec-fetch-site': 'same-origin',
-        'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) '
-                      'Chrome/103.0.0.0 Mobile Safari/537.36',
-        'x-requested-with': 'XMLHttpRequest',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': USER_AGENT,
     }
 
     try:
-        request = requests.get(f'{BASE_URL}/graph/{currency}/{start_date}/{end_date}', headers=headers)
+        request = requests.get(f'{BASE_URL}/graph/{currency}/{start_date.date()}/{end_date.date()}', headers=headers)
         request.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        if dont_raise_error:
-            return False
         raise SystemExit(err)
 
     soup = BeautifulSoup(request.text, 'html.parser')
     for data in soup.find_all("script"):
-
-        # get variables from script and make them in array(list in python LOL)
+        # get variables from script and convert them to list
         if "data: {" in data.text:
-            data_array = data.text.split("data: [")[1].split("]")[0]
-            data_array = data_array.split(",")
+            price_list = data.text.split("data: [")[1].split("]")[0].split(",")
+            date_list = data.text.split("labels: [")[1].split("]")[0].split(',')
 
-            labels_temp = data.text.split("labels: [")[1].split("]")[0]
-            labels_temp = labels_temp.split(',')
-
-            labels = []
-            for item in labels_temp:
-                labels.append(item[10:20])
-
-            data = []
-            for item in data_array:
-                data.append(item)
+            if len(price_list) != len(date_list):
+                raise SystemExit('Error: data inconsistency')
 
             dic = {}
-            for i in range(len(labels)):
-                dic[labels[i]] = data[i]
+            for i in range(len(price_list)):
+                price = int(price_list[i])
+                date = re.search(r'\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])', date_list[i]).group(0)
+                dic[date] = price
 
             return dic
