@@ -51,5 +51,30 @@ def cli(ctx):
         console.print(currencies_table, coins_table, gold_table)
 
 
+@cli.command()
+def graph():
+    click.echo('Graph is not implemented yet')
+
+
+@cli.command()
+def live():
+    click.echo('Live is not implemented yet')
+
+
+@cli.command()
+def convert():
+    click.echo('Convert is not implemented yet')
+
+
+@cli.command()
+def history():
+    click.echo('History is not implemented yet')
+
+
+@cli.command()
+def export():
+    click.echo('Export is not implemented yet')
+
+
 if __name__ == '__main__':
     cli()
