@@ -1,12 +1,17 @@
 import re
 from datetime import datetime, timedelta
+from typing import Tuple, List
 
 import requests
 from bs4 import BeautifulSoup
 
+from data import Currency, Coin, Gold
+
 BASE_URL = 'https://www.bonbast.com'
 USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
              'Chrome/103.0.0.0 Mobile Safari/537.36'
+BUY = '1'
+SELL = '2'
 
 
 def get_token_from_main_page():
@@ -47,7 +52,7 @@ def get_token_from_main_page():
     return search.group(1)
 
 
-def get_prices_from_api(token: str):
+def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Gold]]:
     """ Gets the prices' data from API using
 
     param token: You should pass the token that you got from get_token_from_main_page
@@ -81,10 +86,41 @@ def get_prices_from_api(token: str):
     try:
         r = requests.post(f'{BASE_URL}/json', headers=headers, data=data)
         r.raise_for_status()
+        r = r.json()
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
 
-    return r.json()
+    currencies: List[Currency] = []
+    coins: List[Coin] = []
+    golds: List[Gold] = []
+
+    for currency in Currency.VALUES:
+        if f'{currency}{BUY}' in r and f'{currency}{SELL}' in r:
+            currencies.append(Currency(
+                currency.upper(),
+                Currency.VALUES[currency],
+                int(r[f'{currency}{BUY}']),
+                int(r[f'{currency}{SELL}']),
+            ))
+
+    for coin in Coin.VALUES:
+        if f'{coin}' in r and f'{coin}{SELL}' in r:
+            coins.append(Coin(
+                coin,
+                Coin.VALUES[coin],
+                int(r[coin]),
+                int(r[f'{coin}{SELL}']),
+            ))
+
+    for gold in Gold.VALUES:
+        if f'{gold}' in r:
+            golds.append(Gold(
+                gold,
+                Gold.VALUES[gold],
+                int(r[gold])
+            ))
+
+    return currencies, coins, golds
 
 
 def get_graph_data(
