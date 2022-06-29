@@ -1,3 +1,8 @@
+try:
+    from .utils import *
+except:
+    from utils import *
+
 PRICE_FORMATTER = "{:,}"
 
 
@@ -43,11 +48,11 @@ class Currency:
 
     @property
     def formatted_buy(self) -> str:
-        return PRICE_FORMATTER.format(self.buy)
+        return format_toman(self.buy)
 
     @property
     def formatted_sell(self) -> str:
-        return PRICE_FORMATTER.format(self.sell)
+        return format_toman(self.sell)
 
     def to_json(self) -> dict:
         return {
@@ -78,11 +83,11 @@ class Coin:
 
     @property
     def formatted_buy(self) -> str:
-        return PRICE_FORMATTER.format(self.buy)
+        return format_toman(self.buy)
 
     @property
     def formatted_sell(self) -> str:
-        return PRICE_FORMATTER.format(self.sell)
+        return format_toman(self.sell)
 
     def to_json(self) -> dict:
         return {
@@ -109,7 +114,7 @@ class Gold:
 
     @property
     def formatted_price(self) -> str:
-        return PRICE_FORMATTER.format(self.price)
+        return format_toman(self.price)
 
     def to_json(self) -> dict:
         return {
@@ -123,6 +128,7 @@ class Gold:
 class Graph:
     """ Graph model
     """
+
     def __init__(self, date: str, value: int, currency: str):
         self.date = date
         self.value = value
