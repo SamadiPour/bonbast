@@ -2,13 +2,13 @@ from datetime import datetime, timedelta
 from rich.console import Console
 
 try:
-    from .server import get_token_from_main_page, get_prices_from_api
-    from .storage_manager import StorageManager
-    from .tables import get_currencies_table, get_coins_table, get_gold_table
+    from .server import *
+    from .storage_manager import *
+    from .tables import *
 except:
-    from server import get_token_from_main_page, get_prices_from_api
-    from storage_manager import StorageManager
-    from tables import get_currencies_table, get_coins_table, get_gold_table
+    from server import *
+    from storage_manager import *
+    from tables import *
 
 
 def get_prices():
