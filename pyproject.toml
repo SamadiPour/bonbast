@@ -53,4 +53,4 @@ push = false
     'current_version = "{version}"',
     'version = "{version}"',
 ]
-"src/bonbast/__init__.py" = ["{version}"]
+"src/bonbast/__init__.py" = ["{bonbast_version}"]

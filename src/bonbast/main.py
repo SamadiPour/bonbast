@@ -3,10 +3,12 @@ from rich.console import Console
 import click
 
 try:
+    from .__init__ import *
     from .server import *
     from .storage_manager import *
     from .tables import *
 except:
+    from __init__ import *
     from server import *
     from storage_manager import *
     from tables import *
@@ -37,7 +39,17 @@ def get_prices():
         return response
 
 
+def print_version(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
+    else:
+        click.echo(bonbast_version)
+        ctx.exit()
+
+
 @click.group(invoke_without_command=True)
+@click.option('-v', '--version', is_flag=True, callback=print_version,
+              expose_value=False, is_eager=True)
 @click.pass_context
 def cli(ctx):
     if ctx.invoked_subcommand is None:
