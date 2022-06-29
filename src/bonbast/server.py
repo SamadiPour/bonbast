@@ -5,7 +5,10 @@ from typing import Tuple, List
 import requests
 from bs4 import BeautifulSoup
 
-from data import Currency, Coin, Gold
+try:
+    from .data import Currency, Coin, Gold
+except:
+    from data import Currency, Coin, Gold
 
 BASE_URL = 'https://www.bonbast.com'
 USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
