@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Optional, Tuple, List
 
 
-# needs to be singeton
+# needs to be singleton
 class StorageManager(object):
     _instance = None
 
