@@ -75,8 +75,8 @@ def live():
 
 # todo: specify buy or sell
 @cli.command()
-@click.option('-s', '--source', type=click.Choice(Currency.VALUES))
-@click.option('-d', '--destination', type=click.Choice(Currency.VALUES))
+@click.option('-s', '--source', type=click.Choice(Currency.VALUES), case_sensitive=False)
+@click.option('-d', '--destination', type=click.Choice(Currency.VALUES), case_sensitive=False)
 @click.argument('amount', type=click.FLOAT)
 @click.pass_context
 def convert(ctx, source, destination, amount):
