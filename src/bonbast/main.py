@@ -1,6 +1,5 @@
-from datetime import datetime, timedelta
-from rich.console import Console
 import click
+from rich.console import Console
 
 try:
     from .__init__ import *
@@ -63,14 +62,14 @@ def cli(ctx):
         console.print(currencies_table, coins_table, gold_table)
 
 
-@cli.command()
-def graph():
-    click.echo('Graph is not implemented yet')
+# @cli.command()
+# def graph():
+#     click.echo('Graph is not implemented yet')
 
 
-@cli.command()
-def live():
-    click.echo('Live is not implemented yet')
+# @cli.command()
+# def live():
+#     click.echo('Live is not implemented yet')
 
 
 @cli.command()
@@ -108,14 +107,14 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
         click.echo(f'{buy} / {sell}')
 
 
-@cli.command()
-def history():
-    click.echo('History is not implemented yet')
+# @cli.command()
+# def history():
+#     click.echo('History is not implemented yet')
 
 
-@cli.command()
-def export():
-    click.echo('Export is not implemented yet')
+# @cli.command()
+# def export():
+#     click.echo('Export is not implemented yet')
 
 
 if __name__ == '__main__':
