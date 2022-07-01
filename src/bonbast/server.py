@@ -13,8 +13,8 @@ except:
 BASE_URL = 'https://www.bonbast.com'
 USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
              'Chrome/103.0.0.0 Mobile Safari/537.36'
-BUY = '1'
-SELL = '2'
+SELL = '1'
+BUY = '2'
 
 
 def get_token_from_main_page():
@@ -102,17 +102,17 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
             currencies.append(Currency(
                 currency.upper(),
                 Currency.VALUES[currency],
-                int(r[f'{currency}{BUY}']),
-                int(r[f'{currency}{SELL}']),
+                sell=int(r[f'{currency}{SELL}']),
+                buy=int(r[f'{currency}{BUY}']),
             ))
 
     for coin in Coin.VALUES:
-        if f'{coin}' in r and f'{coin}{SELL}' in r:
+        if f'{coin}' in r and f'{coin}{BUY}' in r:
             coins.append(Coin(
                 coin,
                 Coin.VALUES[coin],
-                int(r[coin]),
-                int(r[f'{coin}{SELL}']),
+                sell=int(r[coin]),
+                buy=int(r[f'{coin}{BUY}']),
             ))
 
     for gold in Gold.VALUES:
@@ -120,7 +120,7 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
             golds.append(Gold(
                 gold,
                 Gold.VALUES[gold],
-                int(r[gold])
+                price=int(r[gold])
             ))
 
     return currencies, coins, golds

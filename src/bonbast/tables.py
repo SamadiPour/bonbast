@@ -15,15 +15,15 @@ def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
 
     table.add_column("Code", style="cyan", no_wrap=True)
     table.add_column("Currency", style="cyan")
-    table.add_column("Buy", style="green", no_wrap=True)
     table.add_column("Sell", style="green", no_wrap=True)
+    table.add_column("Buy", style="green", no_wrap=True)
 
     for currency in currencies:
         table.add_row(
             currency.code,
             currency.name,
-            currency.formatted_buy,
             currency.formatted_sell,
+            currency.formatted_buy,
         )
 
     return table
@@ -51,14 +51,14 @@ def get_coins_table(coins: List[Coin]) -> ConsoleRenderable:
     table = Table(title="Coins")
 
     table.add_column("Coin", style="cyan")
-    table.add_column("Buy", style="green", no_wrap=True)
     table.add_column("Sell", style="green", no_wrap=True)
+    table.add_column("Buy", style="green", no_wrap=True)
 
     for coin in coins:
         table.add_row(
             coin.name,
-            coin.formatted_buy,
             coin.formatted_sell,
+            coin.formatted_buy,
         )
 
     return table

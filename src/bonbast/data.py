@@ -40,11 +40,11 @@ class Currency:
         'qar': 'Qatari Rial',
     }
 
-    def __init__(self, code: str, name: str, buy: int, sell: int):
+    def __init__(self, code: str, name: str, sell: int, buy: int):
         self.code = code
         self.name = name
-        self.buy = buy
         self.sell = sell
+        self.buy = buy
 
     @property
     def formatted_buy(self) -> str:
@@ -58,8 +58,8 @@ class Currency:
         return {
             self.code: {
                 'name': self.name,
-                'buy': self.buy,
                 'sell': self.sell,
+                'buy': self.buy,
             }
         }
 
@@ -75,11 +75,11 @@ class Coin:
         'azadi1_4': '¼ Azadi',
     }
 
-    def __init__(self, code: str, name: str, buy: int, sell: int):
+    def __init__(self, code: str, name: str, sell: int, buy: int):
         self.code = code
         self.name = name
-        self.buy = buy
         self.sell = sell
+        self.buy = buy
 
     @property
     def formatted_buy(self) -> str:
@@ -93,8 +93,8 @@ class Coin:
         return {
             self.code: {
                 'name': self.name,
-                'buy': self.buy,
                 'sell': self.sell,
+                'buy': self.buy,
             }
         }
 
