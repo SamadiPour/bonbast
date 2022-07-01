@@ -24,6 +24,7 @@ dependencies = [
     "rich >= 12.4.4",
     "beautifulsoup4 >= 4.11.1",
     "bs4",
+    "click >= 8.1.3",
 ]
 requires-python = ">=3.7"
 
@@ -52,4 +53,4 @@ push = false
     'current_version = "{version}"',
     'version = "{version}"',
 ]
-"src/bonbast/__init__.py" = ["{version}"]
+"src/bonbast/__init__.py" = ["{bonbast_version}"]
