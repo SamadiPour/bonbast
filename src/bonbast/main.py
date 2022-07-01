@@ -73,29 +73,39 @@ def live():
     click.echo('Live is not implemented yet')
 
 
-# todo: specify buy or sell
 @cli.command()
-@click.option('-s', '--source', type=click.Choice(Currency.VALUES), case_sensitive=False)
-@click.option('-d', '--destination', type=click.Choice(Currency.VALUES), case_sensitive=False)
+@click.option('-s', '--source', type=click.Choice(Currency.VALUES, case_sensitive=False))
+@click.option('-d', '--destination', type=click.Choice(Currency.VALUES, case_sensitive=False))
 @click.argument('amount', type=click.FLOAT)
+@click.option('--only-buy', is_flag=True, default=False, help='Only show buy price')
+@click.option('--only-sell', is_flag=True, default=False, help='Only show sell price')
 @click.pass_context
-def convert(ctx, source, destination, amount):
+def convert(ctx, source, destination, amount, only_buy, only_sell):
     if source is None and destination is None:
         raise click.BadOptionUsage('', 'Please specify source or destination currency')
 
     if source is not None and destination is not None:
         raise click.BadOptionUsage('', 'Don\'t use --source and --destination together')
 
+    if only_buy and only_sell:
+        raise click.BadOptionUsage('', 'Don\'t use --only-buy and --only-sell together')
+
     currencies_list, _, __ = get_prices()
     if source is not None:
         currency = next(currency for currency in currencies_list if currency.code.lower() == source.lower())
-        click.echo(f'{format_toman(int(amount * currency.buy))} / {format_toman(int(amount * currency.sell))}')
-        ctx.exit()
-
-    if destination is not None:
+        buy = format_toman(int(amount * currency.buy))
+        sell = format_toman(int(amount * currency.sell))
+    else:
         currency = next(currency for currency in currencies_list if currency.code.lower() == destination.lower())
-        click.echo(f'{format_price(amount / currency.sell)} / {format_price(amount / currency.buy)}')
-        ctx.exit()
+        buy = format_price(amount / currency.sell)
+        sell = format_price(amount / currency.buy)
+
+    if only_buy:
+        click.echo(buy)
+    elif only_sell:
+        click.echo(sell)
+    else:
+        click.echo(f'{buy} / {sell}')
 
 
 @cli.command()
