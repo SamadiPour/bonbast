@@ -17,6 +17,7 @@ def get_prices():
     # get token from storage
     # check if token's time and make sure it's not expired
     token, token_date = StorageManager().get_token()
+    new_token = False
     if token is not None:
         # token will expire in 10 minutes
         # if expired, delete it and get a new one
@@ -26,16 +27,22 @@ def get_prices():
     else:
         # if we don't have a token, we will get it from the main page
         token = get_token_from_main_page()
-        StorageManager().save_token(token, datetime.now())
+        token_date = datetime.now()
+        new_token = True
 
     # get prices from the api with the token acquired from main page
-    response = get_prices_from_api(token)
-    if 'reset' in response:
-        # if we got a reset response, delete the token and get a new one
-        StorageManager().delete_token()
-        return get_prices()
-    else:
+    try:
+        response = get_prices_from_api(token)
+        StorageManager().save_token(token, token_date)
         return response
+    except ResetAPIError:
+        if new_token:
+            # if the token is new, and we still get this error, exit and show the error.
+            raise SystemExit('Error: token is expired. Try again later.')
+        else:
+            # delete the expired token and get a new one
+            StorageManager().delete_token()
+            return get_prices()
 
 
 def print_version(ctx, param, value):

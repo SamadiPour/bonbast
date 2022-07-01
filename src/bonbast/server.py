@@ -93,6 +93,9 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
 
+    if 'reset' in r:
+        raise ResetAPIError('Error: token is expired')
+
     currencies: List[Currency] = []
     coins: List[Coin] = []
     golds: List[Gold] = []
@@ -176,3 +179,10 @@ def get_graph_data(
                 dic[date] = price
 
             return dic
+
+
+class ResetAPIError(Exception):
+    """
+    This exception is raised when the token is expired, and you have to get new one.
+    """
+    pass
