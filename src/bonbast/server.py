@@ -1,6 +1,6 @@
 import re
 from datetime import datetime, timedelta
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 import requests
 from bs4 import BeautifulSoup
@@ -15,6 +15,13 @@ USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit
              'Chrome/103.0.0.0 Mobile Safari/537.36'
 SELL = '1'
 BUY = '2'
+
+
+def int_try_parse(value) -> Optional[int]:
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
 def get_token_from_main_page():
@@ -179,6 +186,66 @@ def get_graph_data(
                 dic[date] = price
 
             return dic
+
+
+def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[Currency]:
+    if date.date() < datetime(2012, 10, 9).date():
+        raise SystemExit('Error: date is too far in the past')
+
+    if date.date() >= datetime.today().date():
+        raise SystemExit('Error: date can not be in the future')
+
+    headers = {
+        'authority': 'bonbast.com',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'accept-language': 'en-US,en;q=0.9,fa;q=0.8',
+        'cache-control': 'max-age=0',
+        'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
+        'sec-ch-ua-mobile': '?1',
+        'sec-ch-ua-platform': '"Android"',
+        'sec-fetch-dest': 'document',
+        'sec-fetch-mode': 'navigate',
+        'sec-fetch-site': 'same-origin',
+        'sec-fetch-user': '?1',
+        'upgrade-insecure-requests': '1',
+        'user-agent': USER_AGENT,
+    }
+
+    try:
+        request = requests.get(f'{BASE_URL}/archive/{date.strftime("%Y/%m/%d")}', headers=headers)
+        request.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        raise SystemExit(err)
+
+    soup = BeautifulSoup(request.text, 'html.parser')
+    tables = soup.findAll("table")
+
+    # first and second table are currencies
+    currencies: List[Currency] = []
+    for table in tables[0:1]:
+        for row in table.findAll('tr')[1:]:
+            cells = row.findAll("td")
+            currencies.append(Currency(
+                cells[0].text.lower(),
+                Currency.VALUES[cells[0].text.lower()],
+                sell=int_try_parse(cells[2].text),
+                buy=int_try_parse(cells[3].text),
+            ))
+
+    # todo: parse it correctly
+    # last table is coins
+    # coins: List[Coin] = []
+    # for table in tables[-1:]:
+    #     for row in table.findAll('tr')[1:]:
+    #         cells = row.findAll("td")
+    #         coins.append(Coin(
+    #             cells[0].text.lower(),
+    #             Coin.VALUES[cells[0].text.lower()],
+    #             sell=int_try_parse(cells[2].text),
+    #             buy=int_try_parse(cells[3].text),
+    #         ))
+
+    return currencies
 
 
 class ResetAPIError(Exception):

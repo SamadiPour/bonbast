@@ -114,9 +114,17 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
         click.echo(f'{buy} / {sell}')
 
 
-# @cli.command()
-# def history():
-#     click.echo('History is not implemented yet')
+@cli.command()
+@click.option(
+    '--date',
+    type=click.DateTime(formats=["%Y/%m/%d", '%Y-%m-%d']),
+    prompt=True,
+    help='Date to get prices for'
+)
+def history(date):
+    currencies = get_history(date)
+    console = Console()
+    console.print(get_currencies_table(currencies, 2))
 
 
 # @cli.command()
