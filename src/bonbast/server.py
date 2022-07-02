@@ -190,10 +190,10 @@ def get_graph_data(
 
 def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[Currency]:
     if date.date() < datetime(2012, 10, 9).date():
-        raise SystemExit('Error: date is too far in the past')
+        raise SystemExit('Error: date is too far in the past. Date must be greater than 2012-10-09')
 
     if date.date() >= datetime.today().date():
-        raise SystemExit('Error: date can not be in the future')
+        raise SystemExit(f'Error: date must be less than today({date.today().date()}).')
 
     headers = {
         'authority': 'bonbast.com',
