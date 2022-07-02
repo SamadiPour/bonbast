@@ -22,8 +22,8 @@ def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
         table.add_row(
             currency.code,
             currency.name,
-            currency.formatted_sell,
-            currency.formatted_buy,
+            currency.formatted_sell if currency.sell is not None else '-',
+            currency.formatted_buy if currency.buy is not None else '-',
         )
 
     return table
@@ -32,8 +32,20 @@ def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
 def get_currencies_table(currencies: List[Currency], columns: int) -> ConsoleRenderable:
     """ Gets a list of data.Currency and generates currencies table
     """
-    each_part_count = math.ceil(len(currencies) / columns)
-    currencies_parts = [currencies[i:i + each_part_count] for i in range(0, len(currencies), each_part_count)]
+
+    filtered_currencies = [
+        currency for currency in currencies if
+        (currency.sell is not None or currency.buy is not None) and (currency.sell != 0 or currency.buy != 0)
+    ]
+
+    if len(filtered_currencies) < 6:
+        columns = 1
+
+    each_part_count = math.ceil(len(filtered_currencies) / columns)
+    currencies_parts = [
+        filtered_currencies[i:i + each_part_count] for i in
+        range(0, len(filtered_currencies), each_part_count)
+    ]
     tables = [__get_currencies_sub_table(part) for part in currencies_parts]
 
     grid = Table.grid(padding=5)
@@ -57,8 +69,8 @@ def get_coins_table(coins: List[Coin]) -> ConsoleRenderable:
     for coin in coins:
         table.add_row(
             coin.name,
-            coin.formatted_sell,
-            coin.formatted_buy,
+            coin.formatted_sell if coin.sell is not None else '-',
+            coin.formatted_buy if coin.buy is not None else '-',
         )
 
     return table
@@ -76,7 +88,7 @@ def get_gold_table(golds: List[Gold]) -> ConsoleRenderable:
     for gold in golds:
         table.add_row(
             gold.name,
-            gold.formatted_price,
+            gold.formatted_price if gold.price is not None else '-',
         )
 
     return table
