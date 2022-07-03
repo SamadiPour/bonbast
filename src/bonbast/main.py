@@ -9,7 +9,7 @@ try:
 except:  # noqa
     from __init__ import *
     from server import *
-    from src.bonbast.managers.token import *
+    from managers.token import *
     from tables import *
 
 

@@ -1,9 +1,6 @@
 import datetime
 
-try:
-    from ..server import get_token_from_main_page
-except:  # noqa
-    from src.bonbast.server import get_token_from_main_page
+from ..server import get_token_from_main_page
 
 
 class Token(object):
@@ -31,7 +28,7 @@ class Token(object):
         try:
             from .storage import storage_manager
         except:  # noqa
-            from src.bonbast.managers.storage import storage_manager
+            from storage import storage_manager
 
         def build_fresh_token():
             storage_manager.delete_token()

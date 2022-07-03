@@ -3,10 +3,7 @@ import pathlib
 import sys
 from datetime import datetime
 
-try:
-    from .token import Token
-except:  # noqa
-    from src.bonbast.managers.token import Token
+from .token import Token
 
 
 class Singleton(type):
