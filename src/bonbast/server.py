@@ -1,14 +1,14 @@
 import re
 from datetime import datetime, timedelta
-from typing import Tuple, List, Optional
+from typing import Tuple, List, Optional, Dict
 
 import requests
 from bs4 import BeautifulSoup
 
 try:
-    from .data import *
-except:
-    from data import *
+    from .models import *
+except ImportError:
+    from models import *
 
 BASE_URL = 'https://www.bonbast.com'
 USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
@@ -140,7 +140,7 @@ def get_graph_data(
         currency: str,
         start_date: datetime = datetime.today() - timedelta(days=30),
         end_date: datetime = datetime.today(),
-) -> dict[str, int]:
+) -> Dict[str, int]:
     """
         This function will make a request to bonbast.com/graph and make them in two array.
     """
