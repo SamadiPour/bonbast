@@ -1,8 +1,10 @@
 import datetime
 
 try:
+    from .storage import storage_manager
     from ..server import get_token_from_main_page
 except:  # noqa
+    from src.bonbast.managers.storage import storage_manager
     from src.bonbast.server import get_token_from_main_page
 
 
@@ -28,11 +30,6 @@ class Token(object):
         """
         :return: a new [fresh] Token instance
         """
-        try:
-            from .storage import storage_manager
-        except ImportError:
-            from src.bonbast.managers.storage import storage_manager
-
         def build_fresh_token():
             storage_manager.delete_token()
             instance = Token(get_token_from_main_page())
