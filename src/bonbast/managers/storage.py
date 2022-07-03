@@ -1,10 +1,11 @@
 import os
 import pathlib
 import sys
+from collections import namedtuple
 from datetime import datetime
 
-from .token import Token
-from ..utils import Singleton
+
+from src.bonbast.utils import Singleton
 
 
 class StorageManager(object, metaclass=Singleton):
@@ -36,22 +37,22 @@ class StorageManager(object, metaclass=Singleton):
 
         return data_dir / "bonbast"
 
-    def save_token(self, token: Token) -> None:
+    def save_token(self, token_value, generated_date):
         """ Gets token it in data directory
         """
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
         with open(self.token_file_path, 'w') as f:
-            f.write(f'{token.value}\n{token.generated_at.isoformat()}')
+            f.write(f'{token_value}\n{generated_date.isoformat()}')
 
-    def get_token(self) -> Token:
+    def get_token(self):
         """ Loads the saved token from datadir.
         Returns token, datetime
         Raise FileNotFoundError if no token was founded
         """
         with open(self.token_file_path, 'r') as f:
             token, date = f.read().splitlines()
-            return Token(token, generated_at=datetime.fromisoformat(date))
+            return namedtuple('Token', 'value generated_at')(token, datetime.fromisoformat(date))
 
     def delete_token(self) -> None:
         """ Delete the saved token from datadir

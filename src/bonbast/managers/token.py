@@ -1,6 +1,6 @@
 import datetime
 
-from ..server import get_token_from_main_page
+from src.bonbast.server import get_token_from_main_page
 
 
 class Token(object):
@@ -33,12 +33,13 @@ class Token(object):
         def build_fresh_token():
             storage_manager.delete_token()
             instance = Token(get_token_from_main_page())
-            storage_manager.save_token(instance)
+            storage_manager.save_token(instance.value, instance.generated_at)
 
             return instance
 
         try:
-            token_instance = storage_manager.get_token()
+            token_data = storage_manager.get_token()
+            token_instance = Token(value=token_data.value, generated_at=token_data.generated_at)
         except FileNotFoundError:
             token_instance = build_fresh_token()
 
