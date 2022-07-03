@@ -4,25 +4,25 @@ from rich.console import Console
 try:
     from .__init__ import *
     from .server import *
-    from .managers.token import *
-    from .managers.storage import *
+    from .managers.token_manager import *
+    from .managers.storage_manager import *
     from .tables import *
 except ImportError:
     from __init__ import *
     from server import *
-    from managers.token import *
-    from managers.storage import *
+    from managers.token_manager import *
+    from managers.storage_manager import *
     from tables import *
 
 
 @retry(message='Error: token is expired. Try again later.')
 def get_prices():
-    token = Token.generate()
+    token = token_manager.generate()
     try:
         response = get_prices_from_api(token.value)
         return response
     except ResetAPIError as e:
-        storage_manager.delete_token()
+        token_manager.invalidate_token()
         raise e
 
 
