@@ -4,12 +4,12 @@ from rich.console import Console
 try:
     from .__init__ import *
     from .server import *
-    from .storage_manager import *
+    from src.bonbast.managers.storage import *
     from .tables import *
-except:
+except:  # noqa
     from __init__ import *
     from server import *
-    from storage_manager import *
+    from src.bonbast.managers.storage import *
     from tables import *
 
 
