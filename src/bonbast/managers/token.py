@@ -2,7 +2,7 @@ import datetime
 
 try:
     from ..server import get_token_from_main_page
-except ImportError:
+except:  # noqa
     from src.bonbast.server import get_token_from_main_page
 
 

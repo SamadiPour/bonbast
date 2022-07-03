@@ -5,10 +5,8 @@ from collections import namedtuple
 from datetime import datetime
 
 try:
-    from .token import Token
     from ..utils import Singleton
-except ImportError:
-    from src.bonbast.managers.token import Token
+except: # noqa
     from src.bonbast.utils import Singleton
 
 
