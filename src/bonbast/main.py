@@ -6,7 +6,7 @@ try:
     from .server import *
     from .managers.token import *
     from .tables import *
-except:  # noqa
+except ImportError:
     from __init__ import *
     from server import *
     from managers.token import *

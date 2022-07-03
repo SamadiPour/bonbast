@@ -27,7 +27,7 @@ class Token(object):
         """
         try:
             from .storage import storage_manager
-        except:  # noqa
+        except ImportError:
             from storage import storage_manager
 
         def build_fresh_token():

@@ -6,7 +6,7 @@ from rich.console import ConsoleRenderable
 
 try:
     from .data import *
-except: # noqa
+except ImportError:
     from data import *
 
 
