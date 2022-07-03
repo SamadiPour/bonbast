@@ -36,16 +36,10 @@ class TokenManager(object, metaclass=Singleton):
         """
         :return: a new [fresh] Token instance
         """
-
-        def build_fresh_token():
-            instance = Token(get_token_from_main_page())
-            self._save_token(instance)
-
-            return instance
-
         token = self._load_token()
         if token is None or token.is_expired():
-            token = build_fresh_token()
+            token = Token(get_token_from_main_page())
+            self._save_token(token)
 
         return token
 
