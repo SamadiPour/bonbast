@@ -6,9 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 
 try:
-    from .data import *
+    from .models import *
 except ImportError:
-    from data import *
+    from models import *
 
 BASE_URL = 'https://www.bonbast.com'
 USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \

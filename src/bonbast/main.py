@@ -3,12 +3,16 @@ from rich.console import Console
 
 try:
     from .__init__ import *
+    from .utils import *
+    from .models import *
     from .server import *
     from .managers.token_manager import *
     from .managers.storage_manager import *
     from .tables import *
 except ImportError:
     from __init__ import *
+    from utils import *
+    from models import *
     from server import *
     from managers.token_manager import *
     from managers.storage_manager import *

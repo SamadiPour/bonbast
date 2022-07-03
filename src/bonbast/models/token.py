@@ -1,7 +1,7 @@
 import datetime
 
 
-class Token(object):
+class Token:
     def __init__(self, value: str, life_span: int = 600, generated_at: datetime.datetime = datetime.datetime.now()):
         """
         :param value: token value

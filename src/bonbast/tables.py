@@ -5,9 +5,9 @@ from rich.table import Table
 from rich.console import ConsoleRenderable
 
 try:
-    from .data import *
+    from .models import *
 except ImportError:
-    from data import *
+    from models import *
 
 
 def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
