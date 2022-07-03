@@ -4,8 +4,12 @@ import sys
 from collections import namedtuple
 from datetime import datetime
 
-
-from src.bonbast.utils import Singleton
+try:
+    from .token import Token
+    from ..utils import Singleton
+except ImportError:
+    from src.bonbast.managers.token import Token
+    from src.bonbast.utils import Singleton
 
 
 class StorageManager(object, metaclass=Singleton):

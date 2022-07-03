@@ -1,6 +1,9 @@
 import datetime
 
-from src.bonbast.server import get_token_from_main_page
+try:
+    from ..server import get_token_from_main_page
+except ImportError:
+    from src.bonbast.server import get_token_from_main_page
 
 
 class Token(object):
