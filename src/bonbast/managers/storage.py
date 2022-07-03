@@ -1,23 +1,27 @@
-import sys
-import pathlib
 import os
-
+import pathlib
+import sys
 from datetime import datetime
-from typing import Optional, Tuple, List
+
+try:
+    from .token import Token
+except:  # noqa
+    from src.bonbast.managers.token import Token
 
 
-# needs to be singleton
-class StorageManager(object):
-    _instance = None
+class Singleton(type):
+    _instances = {}
 
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class StorageManager(object, metaclass=Singleton):
     def __init__(self):
         self.storage_path = StorageManager.get_app_directory()
         self.token_file_path = self.storage_path / 'token.data'
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(StorageManager, cls).__new__(cls, *args, **kwargs)
-        return cls._instance
 
     @staticmethod
     def get_app_directory() -> pathlib.Path:
@@ -43,29 +47,22 @@ class StorageManager(object):
 
         return data_dir / "bonbast"
 
-    def save_token(self, token: str, date: datetime) -> None:
-        """ Gets token and expiration date for it and saves them in data directory
+    def save_token(self, token: Token) -> None:
+        """ Gets token it in data directory
         """
-        try:
-            self.storage_path.mkdir(parents=True, exist_ok=True)
-        except FileExistsError:
-            pass
+        self.storage_path.mkdir(parents=True, exist_ok=True)
 
         with open(self.token_file_path, 'w') as f:
-            f.write(f'{token}\n{date.isoformat()}')
+            f.write(f'{token.value}\n{token.generated_at.isoformat()}')
 
-    def get_token(self) -> Tuple[Optional[str], Optional[datetime]]:
+    def get_token(self) -> Token:
         """ Loads the saved token from datadir.
-
         Returns token, datetime
-        Returns None, None if there is no saved token
+        Raise FileNotFoundError if no token was founded
         """
-        try:
-            with open(self.token_file_path, 'r') as f:
-                token, date = f.read().splitlines()
-                return token, datetime.fromisoformat(date)
-        except FileNotFoundError:
-            return None, None
+        with open(self.token_file_path, 'r') as f:
+            token, date = f.read().splitlines()
+            return Token(token, generated_at=datetime.fromisoformat(date))
 
     def delete_token(self) -> None:
         """ Delete the saved token from datadir
@@ -74,3 +71,10 @@ class StorageManager(object):
             os.remove(self.token_file_path)
         except FileNotFoundError:
             pass
+
+
+storage_manager = StorageManager()
+
+__all__ = [
+    'storage_manager',
+]

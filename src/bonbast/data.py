@@ -1,6 +1,6 @@
 try:
     from .utils import *
-except:
+except: # noqa
     from utils import *
 
 PRICE_FORMATTER = "{:,}"
