@@ -3,8 +3,8 @@ import pathlib
 import sys
 from datetime import datetime
 
-from bonbast.utils import Singleton
 from .token import Token
+from ..utils import Singleton
 
 
 class StorageManager(object, metaclass=Singleton):
