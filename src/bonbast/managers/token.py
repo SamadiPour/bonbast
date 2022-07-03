@@ -1,6 +1,6 @@
 import datetime
 
-from ..server import get_token_from_main_page
+from bonbast.server import get_token_from_main_page
 
 
 class Token(object):
@@ -27,6 +27,7 @@ class Token(object):
         """
         try:
             from .storage import storage_manager
+
         except ImportError:
             from storage import storage_manager
 

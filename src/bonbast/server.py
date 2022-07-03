@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 try:
     from .data import *
-except:
+except ImportError:
     from data import *
 
 BASE_URL = 'https://www.bonbast.com'
