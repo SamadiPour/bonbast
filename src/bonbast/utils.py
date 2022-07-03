@@ -1,4 +1,5 @@
 import time
+import functools
 
 TOMAN_FORMATTER = "{:,}"
 PRICE_FORMATTER = "{:,.2f}"
@@ -21,15 +22,19 @@ def format_price(price: float) -> str:
     return PRICE_FORMATTER.format(price)
 
 
-def retry(func, retry_count=3, retry_delay=None):
-    def wrapper(*args, **kwargs):
-        for _ in range(retry_count):
-            try:
-                return func(*args, **kwargs)
-            except:  # noqa
-                if retry_delay is not None:
-                    time.sleep(retry_delay)
+def retry(retry_count=3, retry_delay=None, message=''):
+    def decorator_retry(func):
+        @functools.wraps(func)
+        def wrapper_retry(*args, **kwargs):
+            for _ in range(retry_count):
+                try:
+                    return func(*args, **kwargs)
+                except: # noqa
+                    if retry_delay is not None:
+                        time.sleep(retry_delay)
 
-        raise Exception('Failed to get prices')
+            raise SystemExit(message)
 
-    return wrapper
+        return wrapper_retry
+
+    return decorator_retry

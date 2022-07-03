@@ -13,7 +13,7 @@ except ImportError:
     from tables import *
 
 
-@retry
+@retry(message='Error: token is expired. Try again later.')
 def get_prices():
     token = Token.generate()
     response = get_prices_from_api(token.value)
