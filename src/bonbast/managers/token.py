@@ -1,6 +1,9 @@
 import datetime
 
-from ..server import get_token_from_main_page
+try:
+    from ..server import get_token_from_main_page
+except ImportError:
+    from src.bonbast.server import get_token_from_main_page
 
 
 class Token(object):
@@ -37,12 +40,8 @@ class Token(object):
 
             return instance
 
-        try:
-            token_instance = storage_manager.get_token()
-        except FileNotFoundError:
-            token_instance = build_fresh_token()
-
-        if token_instance.is_expired():
+        token_instance = storage_manager.get_token()
+        if token_instance is None or token_instance.is_expired():
             token_instance = build_fresh_token()
 
         return token_instance

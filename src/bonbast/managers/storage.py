@@ -2,6 +2,7 @@ import os
 import pathlib
 import sys
 from datetime import datetime
+from typing import Optional
 
 from .token import Token
 from ..utils import Singleton
@@ -44,14 +45,17 @@ class StorageManager(object, metaclass=Singleton):
         with open(self.token_file_path, 'w') as f:
             f.write(f'{token.value}\n{token.generated_at.isoformat()}')
 
-    def get_token(self) -> Token:
+    def get_token(self) -> Optional[Token]:
         """ Loads the saved token from datadir.
         Returns token, datetime
         Raise FileNotFoundError if no token was founded
         """
-        with open(self.token_file_path, 'r') as f:
-            token, date = f.read().splitlines()
-            return Token(token, generated_at=datetime.fromisoformat(date))
+        try:
+            with open(self.token_file_path, 'r') as f:
+                token, date = f.read().splitlines()
+                return Token(token, generated_at=datetime.fromisoformat(date))
+        except FileNotFoundError:
+            return None
 
     def delete_token(self) -> None:
         """ Delete the saved token from datadir
