@@ -28,7 +28,7 @@ class TokenManager(object, metaclass=Singleton):
     def _load_token() -> Optional[Token]:
         try:
             token, date = TokenManager._storage_manager.load_file().splitlines()
-            return Token(value=token, generated_at=datetime.fromisoformat(date))
+            return Token(value=token, generated_at=datetime.datetime.fromisoformat(date))
         except FileNotFoundError:
             return None
 
