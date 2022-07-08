@@ -1,5 +1,8 @@
+import json
+
 import click
 from rich.console import Console
+from rich.pretty import pprint
 
 try:
     from .__init__ import *
@@ -113,13 +116,19 @@ def history(date):
 
 
 @cli.command()
-def export():
+@click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
+@click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
+def export(pretty, expanded):
     items = get_prices()
-    dump = {}
+    prices = {}
     for item in items:
         for model in item:
-            dump.update(model.to_json())
-    click.echo(dump)
+            prices.update(model.to_json())
+
+    if pretty:
+        pprint(prices, expand_all=expanded)
+    else:
+        click.echo(json.dumps(prices, ensure_ascii=False))
 
 
 if __name__ == '__main__':
