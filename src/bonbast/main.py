@@ -1,70 +1,75 @@
 import json
 
-import click
 from rich.console import Console
 from rich.pretty import pprint
 
 try:
-    from .__init__ import *
     from .utils import *
     from .models import *
     from .server import *
+    from .tables import *
     from .managers.token_manager import *
     from .managers.storage_manager import *
-    from .tables import *
+    from .click_helper.callbacks import *
 except ImportError:
-    from __init__ import *
     from utils import *
     from models import *
     from server import *
+    from tables import *
     from managers.token_manager import *
     from managers.storage_manager import *
-    from tables import *
+    from click_helper.callbacks import *
 
 
 @retry(message='Error: token is expired. Try again later.')
-def get_prices():
+def get_prices(show_only: List[str] = None):
     token = token_manager.generate()
     try:
         response = get_prices_from_api(token.value)
+        if show_only is not None and len(show_only) > 0:
+            response = list(response)
+            for index, item in enumerate(response):
+                response[index] = [item for item in item if item.code.lower() in show_only]
+            response = tuple(response)
+
         return response
     except ResetAPIError as e:
         token_manager.invalidate_token()
         raise e
 
 
-def print_version(ctx, param, value):
-    if not value or ctx.resilient_parsing:
-        return
-    else:
-        click.echo(bonbast_version)
-        ctx.exit()
-
-
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, callback=print_version,
               expose_value=False, is_eager=True)
+@click.option(
+    '--show-only',
+    help='Show only specified currencies, coins, or golds (separated by comma)',
+    callback=parse_show_only
+)
 @click.pass_context
-def cli(ctx):
+def cli(ctx, show_only):
     if ctx.invoked_subcommand is None:
-        currencies_list, coins_list, golds_list = get_prices()
-
-        currencies_table = get_currencies_table(currencies_list, 2)
-        coins_table = get_coins_table(coins_list)
-        gold_table = get_gold_table(golds_list)
-
+        currencies_list, coins_list, golds_list = get_prices(show_only)
         console = Console()
-        console.print(currencies_table, coins_table, gold_table)
+
+        if currencies_list is not None and len(currencies_list) > 0:
+            console.print(get_currencies_table(currencies_list, columns=2))
+
+        if coins_list is not None and len(coins_list) > 0:
+            console.print(get_coins_table(coins_list))
+
+        if golds_list is not None and len(golds_list) > 0:
+            console.print(get_gold_table(golds_list))
 
 
 # @cli.command()
 # def graph():
-#     click.echo('Graph is not implemented yet')
+#     click_helper.echo('Graph is not implemented yet')
 
 
 # @cli.command()
 # def live():
-#     click.echo('Live is not implemented yet')
+#     click_helper.echo('Live is not implemented yet')
 
 
 @cli.command()
@@ -118,8 +123,13 @@ def history(date):
 @cli.command()
 @click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
 @click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
-def export(pretty, expanded):
-    items = get_prices()
+@click.option(
+    '--show-only',
+    help='Show only specified currencies, coins, or golds (separated by comma)',
+    callback=parse_show_only,
+)
+def export(pretty, expanded, show_only):
+    items = get_prices(show_only)
     prices = {}
     for item in items:
         for model in item:
