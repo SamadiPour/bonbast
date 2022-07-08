@@ -1,25 +1,24 @@
 import json
 
-import click
 from rich.console import Console
 from rich.pretty import pprint
 
 try:
-    from .__init__ import *
     from .utils import *
     from .models import *
     from .server import *
+    from .tables import *
     from .managers.token_manager import *
     from .managers.storage_manager import *
-    from .tables import *
+    from .click_helper.callbacks import *
 except ImportError:
-    from __init__ import *
     from utils import *
     from models import *
     from server import *
+    from tables import *
     from managers.token_manager import *
     from managers.storage_manager import *
-    from tables import *
+    from click_helper.callbacks import *
 
 
 @retry(message='Error: token is expired. Try again later.')
@@ -37,20 +36,6 @@ def get_prices(show_only: List[str] = None):
     except ResetAPIError as e:
         token_manager.invalidate_token()
         raise e
-
-
-def print_version(ctx, param, value):
-    if not value or ctx.resilient_parsing:
-        return
-    else:
-        click.echo(bonbast_version)
-        ctx.exit()
-
-
-def parse_show_only(ctx, param, value):
-    if value is not None and value != '':
-        value = value[1:-1].split(',')
-        return [item.lower().strip() for item in value]
 
 
 @click.group(invoke_without_command=True)
@@ -79,12 +64,12 @@ def cli(ctx, show_only):
 
 # @cli.command()
 # def graph():
-#     click.echo('Graph is not implemented yet')
+#     click_helper.echo('Graph is not implemented yet')
 
 
 # @cli.command()
 # def live():
-#     click.echo('Live is not implemented yet')
+#     click_helper.echo('Live is not implemented yet')
 
 
 @cli.command()
