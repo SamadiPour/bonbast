@@ -67,9 +67,30 @@ def cli(ctx, show_only):
 #     click_helper.echo('Graph is not implemented yet')
 
 
-# @cli.command()
-# def live():
-#     click_helper.echo('Live is not implemented yet')
+@cli.group(invoke_without_command=True)
+@click.pass_context
+def live(ctx):
+    if ctx.invoked_subcommand is None:
+        print('Show full table with live prices / up and down arrows')
+    pass
+
+
+@live.command('graph')
+def live_graph():
+    print('show graph updating live every x seconds')
+    pass
+
+
+@live.command('simple')
+def live_table():
+    print('show each currency in separate line with live prices')
+    pass
+
+
+@live.command('currency')
+def live_currency():
+    print('show one currency in table with date / live prices')
+    pass
 
 
 @cli.command()
