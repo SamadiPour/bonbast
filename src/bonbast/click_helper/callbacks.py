@@ -16,5 +16,7 @@ def print_version(ctx, param, value):
 
 def parse_show_only(ctx, param, value):
     if value is not None and value != '':
-        value = value[1:-1].split(',')
+        if value[0] == '\'' and value[-1] == '\'':
+            value = value[1:-1]
+        value = value.split(',')
         return [item.lower().strip() for item in value]
