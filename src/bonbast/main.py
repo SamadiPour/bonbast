@@ -65,13 +65,16 @@ def parse_show_only(ctx, param, value):
 def cli(ctx, show_only):
     if ctx.invoked_subcommand is None:
         currencies_list, coins_list, golds_list = get_prices(show_only)
-
-        currencies_table = get_currencies_table(currencies_list, 2)
-        coins_table = get_coins_table(coins_list)
-        gold_table = get_gold_table(golds_list)
-
         console = Console()
-        console.print(currencies_table, coins_table, gold_table)
+
+        if currencies_list is not None and len(currencies_list) > 0:
+            console.print(get_currencies_table(currencies_list, columns=2))
+
+        if coins_list is not None and len(coins_list) > 0:
+            console.print(get_coins_table(coins_list))
+
+        if golds_list is not None and len(golds_list) > 0:
+            console.print(get_gold_table(golds_list))
 
 
 # @cli.command()
