@@ -23,10 +23,16 @@ except ImportError:
 
 
 @retry(message='Error: token is expired. Try again later.')
-def get_prices():
+def get_prices(show_only: List[str] = None):
     token = token_manager.generate()
     try:
         response = get_prices_from_api(token.value)
+        if show_only is not None and len(show_only) > 0:
+            response = list(response)
+            for index, item in enumerate(response):
+                response[index] = [item for item in item if item.code.lower() in show_only]
+            response = tuple(response)
+
         return response
     except ResetAPIError as e:
         token_manager.invalidate_token()
@@ -41,13 +47,24 @@ def print_version(ctx, param, value):
         ctx.exit()
 
 
+def parse_show_only(ctx, param, value):
+    if value is not None and value != '':
+        value = value[1:-1].split(',')
+        return [item.lower().strip() for item in value]
+
+
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, callback=print_version,
               expose_value=False, is_eager=True)
+@click.option(
+    '--show-only',
+    help='Show only specified currencies, coins, or golds (separated by comma)',
+    callback=parse_show_only
+)
 @click.pass_context
-def cli(ctx):
+def cli(ctx, show_only):
     if ctx.invoked_subcommand is None:
-        currencies_list, coins_list, golds_list = get_prices()
+        currencies_list, coins_list, golds_list = get_prices(show_only)
 
         currencies_table = get_currencies_table(currencies_list, 2)
         coins_table = get_coins_table(coins_list)
@@ -118,8 +135,13 @@ def history(date):
 @cli.command()
 @click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
 @click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
-def export(pretty, expanded):
-    items = get_prices()
+@click.option(
+    '--show-only',
+    help='Show only specified currencies, coins, or golds (separated by comma)',
+    callback=parse_show_only,
+)
+def export(pretty, expanded, show_only):
+    items = get_prices(show_only)
     prices = {}
     for item in items:
         for model in item:
