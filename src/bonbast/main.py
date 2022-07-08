@@ -112,9 +112,14 @@ def history(date):
     console.print(get_currencies_table(currencies, 2))
 
 
-# @cli.command()
-# def export():
-#     click.echo('Export is not implemented yet')
+@cli.command()
+def export():
+    items = get_prices()
+    dump = {}
+    for item in items:
+        for model in item:
+            dump.update(model.to_json())
+    click.echo(dump)
 
 
 if __name__ == '__main__':
