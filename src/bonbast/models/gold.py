@@ -33,7 +33,7 @@ class Gold:
             }
         }
 
-    def assemble_simple_text(self, old_gold: Gold) -> Text:
+    def assemble_simple_text(self, old_gold: Gold, **kwargs) -> Text:
         return Text.assemble(
             f'{self.code}: ',
             (f'{self.price}', get_color(self.price, old_gold.price) if old_gold is not None else ''),

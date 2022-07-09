@@ -42,7 +42,7 @@ class Coin:
             }
         }
 
-    def assemble_simple_text(self, old_coin: Coin) -> Text:
+    def assemble_simple_text(self, old_coin: Coin, **kwargs) -> Text:
         return Text.assemble(
             f'{self.name}: ',
             (f'{self.formatted_sell}', get_color(self.sell, old_coin.sell) if old_coin is not None else ''),

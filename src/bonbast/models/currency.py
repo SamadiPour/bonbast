@@ -4,8 +4,10 @@ from rich.text import Text
 
 try:
     from ..helpers.utils import *
+    from ..helpers.currency_flags import *
 except ImportError:
     from src.bonbast.helpers.utils import *
+    from src.bonbast.helpers.currency_flags import *
 
 
 class Currency:
@@ -56,6 +58,10 @@ class Currency:
     def formatted_sell(self) -> str:
         return format_toman(self.sell)
 
+    @property
+    def flag(self) -> str:
+        return currency_flags[self.code.lower()]
+
     def to_json(self) -> dict:
         return {
             self.code: {
@@ -65,9 +71,9 @@ class Currency:
             }
         }
 
-    def assemble_simple_text(self, old_currency: Currency) -> Text:
+    def assemble_simple_text(self, old_currency: Currency, with_flag: bool = False) -> Text:
         return Text.assemble(
-            f'{self.code}: ',
+            (f'{self.flag} ' if with_flag else '') + f'{self.code}: ',
             (f'{self.formatted_sell}', get_color(self.sell, old_currency.sell) if old_currency is not None else ''),
             ' / ',
             (f'{self.formatted_buy}', get_color(self.buy, old_currency.buy) if old_currency is not None else ''),
