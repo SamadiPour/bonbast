@@ -1,7 +1,7 @@
 try:
-    from ..utils import *
+    from ..helpers.utils import *
 except ImportError:
-    from src.bonbast.utils import *
+    from src.bonbast.helpers.utils import *
 
 
 class Coin:

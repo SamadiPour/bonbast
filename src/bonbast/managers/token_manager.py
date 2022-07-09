@@ -4,12 +4,12 @@ from typing import Optional
 try:
     from ..models.token import *
     from .storage_manager import *
-    from ..utils import Singleton
+    from ..helpers.utils import Singleton
     from ..server import get_token_from_main_page
 except:  # noqa
     from src.bonbast.models.token import *
     from src.bonbast.managers.storage_manager import *
-    from src.bonbast.utils import Singleton
+    from src.bonbast.helpers.utils import Singleton
     from src.bonbast.server import get_token_from_main_page
 
 

@@ -4,21 +4,21 @@ from rich.console import Console
 from rich.pretty import pprint
 
 try:
-    from .utils import *
     from .models import *
     from .server import *
     from .tables import *
     from .managers.token_manager import *
     from .managers.storage_manager import *
-    from .click_helper.callbacks import *
+    from .helpers.click_callbacks import *
+    from .helpers.utils import *
 except ImportError:
-    from utils import *
     from models import *
     from server import *
     from tables import *
     from managers.token_manager import *
     from managers.storage_manager import *
-    from click_helper.callbacks import *
+    from helpers.click_callbacks import *
+    from helpers.utils import *
 
 
 @retry(message='Error: token is expired. Try again later.')

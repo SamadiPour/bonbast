@@ -29,7 +29,7 @@ def retry(retry_count=3, retry_delay=None, message=''):
             for _ in range(retry_count):
                 try:
                     return func(*args, **kwargs)
-                except: # noqa
+                except:  # noqa
                     if retry_delay is not None:
                         time.sleep(retry_delay)
 
