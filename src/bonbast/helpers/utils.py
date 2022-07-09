@@ -38,3 +38,15 @@ def retry(retry_count=3, retry_delay=None, message=''):
         return wrapper_retry
 
     return decorator_retry
+
+
+def get_color(price, old_price):
+    if old_price is None or price is None:
+        return ''
+
+    if price > old_price:
+        return 'green'
+    elif price < old_price:
+        return 'red'
+    else:
+        return ''
