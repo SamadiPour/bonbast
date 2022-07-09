@@ -118,9 +118,53 @@ def live_simple(interval, show_only):
 
 
 @live.command('currency')
-def live_currency():
-    print('show one currency in table with date / live prices')
-    pass
+@click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
+@click.argument(
+    'currency', nargs=1,
+    type=click.Choice(
+        list(Currency.VALUES.keys()) + list(Gold.VALUES.keys()) + list(Coin.VALUES.keys()), case_sensitive=False
+    )
+)
+def live_currency(interval, currency):
+    table = Table()
+    first_time = True
+    with Live(table, auto_refresh=False) as live:
+        while True:
+            # request to get all the currencies
+            collections = get_prices([currency])
+
+            # flatten the list of currencies and get the first element
+            items = (item for collection in collections for item in collection)
+            item = next(items)
+
+            # if it's the first time, add the header
+            if first_time:
+                table.add_column("Date", style="cyan", no_wrap=True)
+                table.add_column("Name", style="cyan", no_wrap=True)
+                if type(item) is Currency or type(item) is Coin:
+                    table.add_column("Sell", style="green", no_wrap=True)
+                    table.add_column("Buy", style="green", no_wrap=True)
+                else:
+                    table.add_column("Price", style="green", no_wrap=True)
+
+                first_time = False
+
+            # add a row with the new information
+            if type(item) is Currency or type(item) is Coin:
+                price = (
+                    item.formatted_sell if item.sell is not None else '-',
+                    item.formatted_buy if item.buy is not None else '-',
+                )
+            else:
+                price = (item.formatted_price if item.price is not None else '-',)
+            table.add_row(
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                item.name,
+                *price,
+            )
+
+            live.update(table, refresh=True)
+            time.sleep(interval)
 
 
 @cli.command()
