@@ -1,7 +1,9 @@
 import json
 
 from rich.console import Console
+from rich.live import Live
 from rich.pretty import pprint
+from rich.text import Text
 
 try:
     from .models import *
@@ -82,9 +84,31 @@ def live_graph():
 
 
 @live.command('simple')
-def live_table():
-    print('show each currency in separate line with live prices')
-    pass
+def live_simple():
+    old_collections = (None, None, None)
+    with Live(auto_refresh=False) as live:
+        while True:
+            collections = get_prices()
+
+            prices_text = Text()
+            prices_text.append(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n', style='bold')
+
+            for collection_index, collection in enumerate(collections):
+                for index, model in enumerate(collection):
+                    old_collection = old_collections[collection_index]
+                    if old_collection is not None \
+                            and len(old_collection) > index \
+                            and old_collection[index].code == model.code:
+                        old_model = old_collection[index]
+                    else:
+                        old_model = None
+
+                    prices_text.append(model.assemble_simple_text(old_model))
+
+            prices_text.rstrip()
+            live.update(prices_text, refresh=True)
+            old_collections = collections
+            time.sleep(30)
 
 
 @live.command('currency')
