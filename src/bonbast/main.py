@@ -84,12 +84,13 @@ def live_graph():
 
 
 @live.command('simple')
+@click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.option(
     '--show-only',
     help='Show only specified currencies, coins, or golds (separated by comma)',
     callback=parse_show_only,
 )
-def live_simple(show_only):
+def live_simple(interval, show_only):
     old_collections = (None, None, None)
     with Live(auto_refresh=False) as live:
         while True:
@@ -113,7 +114,7 @@ def live_simple(show_only):
             prices_text.rstrip()
             live.update(prices_text, refresh=True)
             old_collections = collections
-            time.sleep(30)
+            time.sleep(interval)
 
 
 @live.command('currency')
