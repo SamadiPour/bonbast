@@ -84,11 +84,16 @@ def live_graph():
 
 
 @live.command('simple')
-def live_simple():
+@click.option(
+    '--show-only',
+    help='Show only specified currencies, coins, or golds (separated by comma)',
+    callback=parse_show_only,
+)
+def live_simple(show_only):
     old_collections = (None, None, None)
     with Live(auto_refresh=False) as live:
         while True:
-            collections = get_prices()
+            collections = get_prices(show_only)
 
             prices_text = Text()
             prices_text.append(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n', style='bold')
