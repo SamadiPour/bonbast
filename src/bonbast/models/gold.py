@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from rich.text import Text
+
 try:
-    from ..utils import *
+    from ..helpers.utils import *
 except ImportError:
-    from src.bonbast.utils import *
+    from src.bonbast.helpers.utils import *
 
 
 class Gold:
@@ -28,3 +32,10 @@ class Gold:
                 'price': self.price,
             }
         }
+
+    def assemble_simple_text(self, old_gold: Gold, **kwargs) -> Text:
+        return Text.assemble(
+            f'{self.code}: ',
+            (f'{self.price}', get_color(self.price, old_gold.price) if old_gold is not None else ''),
+            '\n'
+        )

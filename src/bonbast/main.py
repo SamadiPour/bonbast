@@ -1,24 +1,26 @@
 import json
 
 from rich.console import Console
+from rich.live import Live
 from rich.pretty import pprint
+from rich.text import Text
 
 try:
-    from .utils import *
     from .models import *
     from .server import *
     from .tables import *
     from .managers.token_manager import *
     from .managers.storage_manager import *
-    from .click_helper.callbacks import *
+    from .helpers.click_callbacks import *
+    from .helpers.utils import *
 except ImportError:
-    from utils import *
     from models import *
     from server import *
     from tables import *
     from managers.token_manager import *
     from managers.storage_manager import *
-    from click_helper.callbacks import *
+    from helpers.click_callbacks import *
+    from helpers.utils import *
 
 
 @retry(message='Error: token is expired. Try again later.')
@@ -67,9 +69,102 @@ def cli(ctx, show_only):
 #     click_helper.echo('Graph is not implemented yet')
 
 
-# @cli.command()
-# def live():
-#     click_helper.echo('Live is not implemented yet')
+@cli.group(invoke_without_command=True)
+@click.pass_context
+def live(ctx):
+    if ctx.invoked_subcommand is None:
+        print('Show full table with live prices / up and down arrows')
+    pass
+
+
+@live.command('graph')
+def live_graph():
+    print('show graph updating live every x seconds')
+    pass
+
+
+@live.command('simple')
+@click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
+@click.option(
+    '--show-only',
+    help='Show only specified currencies, coins, or golds (separated by comma)',
+    callback=parse_show_only,
+)
+def live_simple(interval, show_only):
+    old_collections = (None, None, None)
+    with Live(auto_refresh=False) as live:
+        while True:
+            collections = get_prices(show_only)
+
+            prices_text = Text()
+            prices_text.append(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n', style='bold')
+
+            for collection_index, collection in enumerate(collections):
+                for index, model in enumerate(collection):
+                    old_collection = old_collections[collection_index]
+                    if old_collection is not None \
+                            and len(old_collection) > index \
+                            and old_collection[index].code == model.code:
+                        old_model = old_collection[index]
+                    else:
+                        old_model = None
+
+                    prices_text.append(model.assemble_simple_text(old_model))
+
+            prices_text.rstrip()
+            live.update(prices_text, refresh=True)
+            old_collections = collections
+            time.sleep(interval)
+
+
+@live.command('currency')
+@click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
+@click.argument(
+    'currency', nargs=1,
+    type=click.Choice(
+        list(Currency.VALUES.keys()) + list(Gold.VALUES.keys()) + list(Coin.VALUES.keys()), case_sensitive=False
+    )
+)
+def live_currency(interval, currency):
+    table = Table()
+    first_time = True
+    with Live(table, auto_refresh=False) as live:
+        while True:
+            # request to get all the currencies
+            collections = get_prices([currency])
+
+            # flatten the list of currencies and get the first element
+            items = (item for collection in collections for item in collection)
+            item = next(items)
+
+            # if it's the first time, add the header
+            if first_time:
+                table.add_column("Date", style="cyan", no_wrap=True)
+                table.add_column("Name", style="cyan", no_wrap=True)
+                if type(item) is Currency or type(item) is Coin:
+                    table.add_column("Sell", style="green", no_wrap=True)
+                    table.add_column("Buy", style="green", no_wrap=True)
+                else:
+                    table.add_column("Price", style="green", no_wrap=True)
+
+                first_time = False
+
+            # add a row with the new information
+            if type(item) is Currency or type(item) is Coin:
+                price = (
+                    item.formatted_sell if item.sell is not None else '-',
+                    item.formatted_buy if item.buy is not None else '-',
+                )
+            else:
+                price = (item.formatted_price if item.price is not None else '-',)
+            table.add_row(
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                item.name,
+                *price,
+            )
+
+            live.update(table, refresh=True)
+            time.sleep(interval)
 
 
 @cli.command()

@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from rich.text import Text
+
 try:
-    from ..utils import *
+    from ..helpers.utils import *
 except ImportError:
-    from src.bonbast.utils import *
+    from src.bonbast.helpers.utils import *
 
 
 class Coin:
@@ -37,3 +41,12 @@ class Coin:
                 'buy': self.buy,
             }
         }
+
+    def assemble_simple_text(self, old_coin: Coin, **kwargs) -> Text:
+        return Text.assemble(
+            f'{self.name}: ',
+            (f'{self.formatted_sell}', get_color(self.sell, old_coin.sell) if old_coin is not None else ''),
+            ' / ',
+            (f'{self.formatted_buy}', get_color(self.buy, old_coin.buy) if old_coin is not None else ''),
+            '\n'
+        )

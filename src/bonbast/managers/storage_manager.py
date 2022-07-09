@@ -3,9 +3,9 @@ import pathlib
 import sys
 
 try:
-    from ..utils import Singleton
+    from ..helpers.utils import Singleton
 except:  # noqa
-    from src.bonbast.utils import Singleton
+    from src.bonbast.helpers.utils import Singleton
 
 
 class StorageManager(object):
