@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from rich.text import Text
+
 try:
     from ..helpers.utils import *
 except ImportError:
@@ -28,3 +32,10 @@ class Gold:
                 'price': self.price,
             }
         }
+
+    def assemble_simple_text(self, old_gold: Gold) -> Text:
+        return Text.assemble(
+            f'{self.code}: ',
+            (f'{self.price}', get_color(self.price, old_gold.price) if old_gold is not None else ''),
+            '\n'
+        )

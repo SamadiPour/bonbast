@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from rich.text import Text
+
 try:
     from ..helpers.utils import *
 except ImportError:
@@ -60,3 +64,12 @@ class Currency:
                 'buy': self.buy,
             }
         }
+
+    def assemble_simple_text(self, old_currency: Currency) -> Text:
+        return Text.assemble(
+            f'{self.code}: ',
+            (f'{self.formatted_sell}', get_color(self.sell, old_currency.sell) if old_currency is not None else ''),
+            ' / ',
+            (f'{self.formatted_buy}', get_color(self.buy, old_currency.buy) if old_currency is not None else ''),
+            '\n'
+        )
