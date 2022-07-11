@@ -40,6 +40,7 @@ def get_prices(show_only: List[str] = None):
         raise e
 
 
+# ================ bonbast ================
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, callback=print_version,
               expose_value=False, is_eager=True)
@@ -69,6 +70,7 @@ def cli(ctx, show_only):
 #     click_helper.echo('Graph is not implemented yet')
 
 
+# ================ bonbast live ================
 @cli.group(invoke_without_command=True)
 @click.pass_context
 def live(ctx):
@@ -77,12 +79,14 @@ def live(ctx):
     pass
 
 
+# ================ bonbast live graph ================
 @live.command('graph')
 def live_graph():
     print('show graph updating live every x seconds')
     pass
 
 
+# ================ bonbast live simple ================
 @live.command('simple')
 @click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.option(
@@ -117,6 +121,7 @@ def live_simple(interval, show_only):
             time.sleep(interval)
 
 
+# ================ bonbast live currency ================
 @live.command('currency')
 @click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.argument(
@@ -167,6 +172,7 @@ def live_currency(interval, currency):
             time.sleep(interval)
 
 
+# ================ bonbast convert ================
 @cli.command()
 @click.option('-s', '--source', type=click.Choice(Currency.VALUES, case_sensitive=False))
 @click.option('-d', '--destination', type=click.Choice(Currency.VALUES, case_sensitive=False))
@@ -202,6 +208,7 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
         click.echo(f'{buy} / {sell}')
 
 
+# ================ bonbast history ================
 @cli.command()
 @click.option(
     '--date',
@@ -215,6 +222,7 @@ def history(date):
     console.print(get_currencies_table(currencies, 2))
 
 
+# ================ bonbast export ================
 @cli.command()
 @click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
 @click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
