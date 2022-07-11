@@ -133,6 +133,7 @@ def live_simple(interval, show_only):
 def live_currency(interval, currency):
     table = Table()
     first_time = True
+    old_model = None
     with Live(table, auto_refresh=False) as live:
         while True:
             # request to get all the currencies
@@ -144,31 +145,47 @@ def live_currency(interval, currency):
 
             # if it's the first time, add the header
             if first_time:
-                table.add_column("Date", style="cyan", no_wrap=True)
-                table.add_column("Name", style="cyan", no_wrap=True)
+                table.add_column("Date", no_wrap=True)
+                table.add_column("Name", no_wrap=True)
                 if type(item) is Currency or type(item) is Coin:
-                    table.add_column("Sell", style="green", no_wrap=True)
-                    table.add_column("Buy", style="green", no_wrap=True)
+                    table.add_column("Sell", no_wrap=True)
+                    table.add_column("Buy", no_wrap=True)
                 else:
-                    table.add_column("Price", style="green", no_wrap=True)
+                    table.add_column("Price", no_wrap=True)
 
                 first_time = False
 
             # add a row with the new information
             if type(item) is Currency or type(item) is Coin:
+                sell_symbol = f' {get_change_char(item.sell, old_model.sell)}' if old_model is not None else ''
+                sell_str = (item.formatted_sell if item.sell is not None else '-') + sell_symbol
+                sell_color = get_color(item.sell, None if old_model is None else old_model.sell)
+
+                buy_symbol = f' {get_change_char(item.buy, old_model.buy)}' if old_model is not None else ''
+                buy_str = (item.formatted_buy if item.buy is not None else '-') + buy_symbol
+                buy_color = get_color(item.buy, None if old_model is None else old_model.buy)
+
                 price = (
-                    item.formatted_sell if item.sell is not None else '-',
-                    item.formatted_buy if item.buy is not None else '-',
+                    Text(sell_str, style=sell_color),
+                    Text(buy_str, style=buy_color),
                 )
             else:
-                price = (item.formatted_price if item.price is not None else '-',)
+                price_char = f' {get_change_char(item.price, old_model.price)}' if old_model is not None else ''
+                price_str = (item.formatted_price if item.price is not None else '-') + price_char
+                price_color = get_color(item.price, None if old_model is None else old_model.price)
+
+                price = (
+                    Text(price_str, style=price_color),
+                )
+
             table.add_row(
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                item.name,
+                Text(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), style=DEFAULT_TEXT_COLOR),
+                Text(item.name, style=DEFAULT_TEXT_COLOR),
                 *price,
             )
 
             live.update(table, refresh=True)
+            old_model = item
             time.sleep(interval)
 
 

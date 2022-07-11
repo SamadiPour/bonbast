@@ -4,6 +4,8 @@ import functools
 TOMAN_FORMATTER = "{:,}"
 PRICE_FORMATTER = "{:,.2f}"
 
+DEFAULT_TEXT_COLOR = 'cyan'
+
 
 class Singleton(type):
     _instances = {}
@@ -50,3 +52,15 @@ def get_color(price, old_price):
         return 'red'
     else:
         return ''
+
+
+def get_change_char(price, old_price):
+    if old_price is None or price is None:
+        return ''
+
+    if price > old_price:
+        return '↑'
+    elif price < old_price:
+        return '↓'
+    else:
+        return '-'
