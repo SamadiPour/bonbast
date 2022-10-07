@@ -67,7 +67,7 @@ def cli(ctx, show_only):
 
 # @cli.command()
 # def graph():
-#     click_helper.echo('Graph is not implemented yet')
+#     click_helper.echo('Draw graph without live update')
 
 
 # ================ bonbast live ================
@@ -80,10 +80,10 @@ def live(ctx):
 
 
 # ================ bonbast live graph ================
-@live.command('graph')
-def live_graph():
-    print('show graph updating live every x seconds')
-    pass
+# @live.command('graph')
+# def live_graph():
+#     print('show graph updating live every x seconds')
+#     pass
 
 
 # ================ bonbast live simple ================
@@ -122,6 +122,8 @@ def live_simple(interval, show_only):
 
 
 # ================ bonbast live currency ================
+# todo: Make sure that the table scroll when updating. Also we can add the newest one to the top.
+# todo: research on how to add delta of the price change (if done, also add to "live simple" command)
 @live.command('currency')
 @click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.argument(
