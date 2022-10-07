@@ -11,6 +11,7 @@ authors = [
     { name = "Amir Hossein SamadiPour", email = "samadipoor2@gmail.com" },
     { name = "Alireza Azadi", email = "alireza_azadi@hotmail.com" },
     { name = "Iliya Aghamajidi", email = "dozheiny@gmail.com" },
+    { name = "Parsa Shahmaleki", email = "parsampsh@gmail.com" },
 ]
 license = { file = "LICENSE" }
 classifiers = [
