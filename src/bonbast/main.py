@@ -40,6 +40,7 @@ def get_prices(show_only: List[str] = None):
         raise e
 
 
+# ================ bonbast ================
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, callback=print_version,
               expose_value=False, is_eager=True)
@@ -66,9 +67,10 @@ def cli(ctx, show_only):
 
 # @cli.command()
 # def graph():
-#     click_helper.echo('Graph is not implemented yet')
+#     click_helper.echo('Draw graph without live update')
 
 
+# ================ bonbast live ================
 @cli.group(invoke_without_command=True)
 @click.pass_context
 def live(ctx):
@@ -77,12 +79,14 @@ def live(ctx):
     pass
 
 
-@live.command('graph')
-def live_graph():
-    print('show graph updating live every x seconds')
-    pass
+# ================ bonbast live graph ================
+# @live.command('graph')
+# def live_graph():
+#     print('show graph updating live every x seconds')
+#     pass
 
 
+# ================ bonbast live simple ================
 @live.command('simple')
 @click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.option(
@@ -117,6 +121,9 @@ def live_simple(interval, show_only):
             time.sleep(interval)
 
 
+# ================ bonbast live currency ================
+# todo: Make sure that the table scroll when updating. Also we can add the newest one to the top.
+# todo: research on how to add delta of the price change (if done, also add to "live simple" command)
 @live.command('currency')
 @click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.argument(
@@ -128,6 +135,7 @@ def live_simple(interval, show_only):
 def live_currency(interval, currency):
     table = Table()
     first_time = True
+    old_model = None
     with Live(table, auto_refresh=False) as live:
         while True:
             # request to get all the currencies
@@ -139,34 +147,51 @@ def live_currency(interval, currency):
 
             # if it's the first time, add the header
             if first_time:
-                table.add_column("Date", style="cyan", no_wrap=True)
-                table.add_column("Name", style="cyan", no_wrap=True)
+                table.add_column("Date", no_wrap=True)
+                table.add_column("Name", no_wrap=True)
                 if type(item) is Currency or type(item) is Coin:
-                    table.add_column("Sell", style="green", no_wrap=True)
-                    table.add_column("Buy", style="green", no_wrap=True)
+                    table.add_column("Sell", no_wrap=True)
+                    table.add_column("Buy", no_wrap=True)
                 else:
-                    table.add_column("Price", style="green", no_wrap=True)
+                    table.add_column("Price", no_wrap=True)
 
                 first_time = False
 
             # add a row with the new information
             if type(item) is Currency or type(item) is Coin:
+                sell_symbol = f' {get_change_char(item.sell, old_model.sell)}' if old_model is not None else ''
+                sell_str = (item.formatted_sell if item.sell is not None else '-') + sell_symbol
+                sell_color = get_color(item.sell, None if old_model is None else old_model.sell)
+
+                buy_symbol = f' {get_change_char(item.buy, old_model.buy)}' if old_model is not None else ''
+                buy_str = (item.formatted_buy if item.buy is not None else '-') + buy_symbol
+                buy_color = get_color(item.buy, None if old_model is None else old_model.buy)
+
                 price = (
-                    item.formatted_sell if item.sell is not None else '-',
-                    item.formatted_buy if item.buy is not None else '-',
+                    Text(sell_str, style=sell_color),
+                    Text(buy_str, style=buy_color),
                 )
             else:
-                price = (item.formatted_price if item.price is not None else '-',)
+                price_char = f' {get_change_char(item.price, old_model.price)}' if old_model is not None else ''
+                price_str = (item.formatted_price if item.price is not None else '-') + price_char
+                price_color = get_color(item.price, None if old_model is None else old_model.price)
+
+                price = (
+                    Text(price_str, style=price_color),
+                )
+
             table.add_row(
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                item.name,
+                Text(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), style=DEFAULT_TEXT_COLOR),
+                Text(item.name, style=DEFAULT_TEXT_COLOR),
                 *price,
             )
 
             live.update(table, refresh=True)
+            old_model = item
             time.sleep(interval)
 
 
+# ================ bonbast convert ================
 @cli.command()
 @click.option('-s', '--source', type=click.Choice(Currency.VALUES, case_sensitive=False))
 @click.option('-d', '--destination', type=click.Choice(Currency.VALUES, case_sensitive=False))
@@ -202,6 +227,7 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
         click.echo(f'{buy} / {sell}')
 
 
+# ================ bonbast history ================
 @cli.command()
 @click.option(
     '--date',
@@ -215,6 +241,7 @@ def history(date):
     console.print(get_currencies_table(currencies, 2))
 
 
+# ================ bonbast export ================
 @cli.command()
 @click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
 @click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
