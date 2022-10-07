@@ -30,8 +30,7 @@ dependencies = [
 requires-python = ">=3.7"
 
 [project.optional-dependencies]
-build = ["build", "twine"]
-dev = ["bumpver", "pytest"]
+build = ["build", "twine", "bumpver"]
 
 [project.scripts]
 bonbast = "bonbast.__main__:run"
