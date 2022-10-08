@@ -132,6 +132,23 @@ output in a more readable way.
 
 ---
 
+# Usage in other programs
+
+There are few ways to use the program in other programs. The best way is to use the json output.
+
+## Mac Shortcuts
+
+You can use the json output or the convert function to create a shortcut in Mac. You can use the shortcut to show the
+currency price as a notification.
+
+## [Raycast](https://www.raycast.com/)
+
+Raycast is a tool for searching your Mac, launching applications, and controlling your computer, and it is far superior
+to Spotlight. You can use the json output to create a script command in Raycast. In this way, you can easily access the
+prices in Raycast.
+
+I included an example script command in the `raycast` folder. You can use it to create your own script.
+
 ![bonbast_raycast](https://user-images.githubusercontent.com/24422125/194708612-a5f5557c-aab3-4ded-b500-9e08b594949c.png)
 
 ---
