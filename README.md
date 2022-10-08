@@ -99,36 +99,36 @@ output in a more readable way.
 
 ## List of supported currencies
 
-| Flag |     Currency      | Code |
-|:----:|:-----------------:|:----:|
-| 🇺🇸 |     US Dollar     | USD  |
-| 🇪🇺 |       Euro        | EUR  |
-| 🇬🇧 |   British Pound   | GBP  |
-| 🇨🇭 |    Swiss Franc    | CHF  |
-| 🇨🇦 |  Canadian Dollar  | CAD  |
+| Flag | Currency          | Code |
+|:----:|-------------------|:----:|
+| 🇺🇸 | US Dollar         | USD  |
+| 🇪🇺 | Euro              | EUR  |
+| 🇬🇧 | British Pound     | GBP  |
+| 🇨🇭 | Swiss Franc       | CHF  |
+| 🇨🇦 | Canadian Dollar   | CAD  |
 | 🇦🇺 | Australian Dollar | AUD  |
-| 🇸🇪 |   Swedish Krona   | SEK  |
-| 🇳🇴 |  Norwegian Krone  | NOK  |
-| 🇷🇺 |   Russian Ruble   | RUB  |
-| 🇹🇭 |     Thai Baht     | THB  |
+| 🇸🇪 | Swedish Krona     | SEK  |
+| 🇳🇴 | Norwegian Krone   | NOK  |
+| 🇷🇺 | Russian Ruble     | RUB  |
+| 🇹🇭 | Thai Baht         | THB  |
 | 🇸🇬 | Singapore Dollar  | SGD  |
 | 🇭🇰 | Hong Kong Dollar  | HKD  |
 | 🇦🇿 | Azerbaijani Manat | AZN  |
 | 🇦🇲 | 10 Armenian Dram  | AMD  |
-| 🇩🇰 |   Danish Krone    | DKK  |
-| 🇦🇪 |    UAE Dirham     | AED  |
-| 🇯🇵 |  10 Japanese Yen  | JPY  |
-| 🇹🇷 |   Turkish Lira    | TRY  |
-| 🇨🇳 |   Chinese Yuan    | CNY  |
-| 🇸🇦 |    Saudi Riyal    | SAR  |
-| 🇮🇳 |   Indian Rupee    | INR  |
+| 🇩🇰 | Danish Krone      | DKK  |
+| 🇦🇪 | UAE Dirham        | AED  |
+| 🇯🇵 | 10 Japanese Yen   | JPY  |
+| 🇹🇷 | Turkish Lira      | TRY  |
+| 🇨🇳 | Chinese Yuan      | CNY  |
+| 🇸🇦 | Saudi Riyal       | SAR  |
+| 🇮🇳 | Indian Rupee      | INR  |
 | 🇲🇾 | Malaysian Ringgit | MYR  |
-| 🇦🇫 |  Afghan Afghani   | AFN  |
-| 🇰🇼 |   Kuwaiti Dinar   | KWD  |
-| 🇮🇶 |  100 Iraqi Dinar  | IQD  |
-| 🇧🇭 |  Bahraini Dinar   | BHD  |
-| 🇴🇲 |    Omani Rial     | OMR  |
-| 🇶🇦 |    Qatari Rial    | QAR  |
+| 🇦🇫 | Afghan Afghani    | AFN  |
+| 🇰🇼 | Kuwaiti Dinar     | KWD  |
+| 🇮🇶 | 100 Iraqi Dinar   | IQD  |
+| 🇧🇭 | Bahraini Dinar    | BHD  |
+| 🇴🇲 | Omani Rial        | OMR  |
+| 🇶🇦 | Qatari Rial       | QAR  |
 
 ---
 
@@ -140,8 +140,6 @@ There are few ways to use the program in other programs. The best way is to use 
 
 You can use the json output or the convert function to create a shortcut in Mac. You can use the shortcut to show the
 currency price as a notification.
-
-![bonbast_shortcuts](https://user-images.githubusercontent.com/24422125/194709287-9b5cebb1-7622-4612-bc2a-e5ad5dfc5f5e.jpg)
 
 ## [Raycast](https://www.raycast.com/)
 
