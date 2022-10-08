@@ -141,6 +141,8 @@ There are few ways to use the program in other programs. The best way is to use 
 You can use the json output or the convert function to create a shortcut in Mac. You can use the shortcut to show the
 currency price as a notification.
 
+![bonbast_shortcuts](https://user-images.githubusercontent.com/24422125/194709287-9b5cebb1-7622-4612-bc2a-e5ad5dfc5f5e.jpg)
+
 ## [Raycast](https://www.raycast.com/)
 
 Raycast is a tool for searching your Mac, launching applications, and controlling your computer, and it is far superior
