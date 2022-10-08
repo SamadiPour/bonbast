@@ -70,6 +70,8 @@ In this mode, the program will show the prices in a table. It can only show one 
 This is useful if you want to see the prices for a specific date. You can use the `-d` or `--date` argument to specify
 the date. The date must be in the format `YYYY-MM-DD` or `YYYY/MM/DD`. Also, the date needs to be Gregorian.
 
+The date is valid from 2012-10-09 to one day before the current date.
+
 ![bonbast_history](https://user-images.githubusercontent.com/24422125/194708555-fb5ada09-8e74-497d-8b61-74f27dea9220.png)
 
 ## Convert
