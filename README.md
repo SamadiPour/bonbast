@@ -91,6 +91,10 @@ terminal to another program like `JQ`.
 
 ![bonbast_export](https://user-images.githubusercontent.com/24422125/194708575-58fc19a5-9aa9-4e6d-b020-a40835d9d55d.png)
 
+### Pretty Print Json
+
+There is also a way to pretty print the json output. You can use the `--pretty` argument to do that. It helps to see the
+output in a more readable way.
 ![bonbast_export_pretty](https://user-images.githubusercontent.com/24422125/194708592-471a189b-e3f4-4a29-b36c-ad536d93822e.png)
 
 ## List of supported currencies
