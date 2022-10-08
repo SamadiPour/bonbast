@@ -43,6 +43,8 @@ I tried my best to display the price data in a variety of ways that would be use
 This will be the default mode if you run the program without any arguments. It will show the current prices for gold,
 coins, and the IRR exchange rate in separate tables.
 
+![bonbast](https://user-images.githubusercontent.com/24422125/194708514-e7b76a69-0671-4a6c-a025-51f29558f087.png)
+
 ## Live
 
 In live mode, the program tries to update the prices in a specified interval. This is useful if you want to keep an eye
@@ -55,14 +57,20 @@ by using the `-i` or `--interval` argument.
 
 In this mode, the program will show the prices as text in the terminal.
 
+![bonbast_live_simple](https://user-images.githubusercontent.com/24422125/194708537-09f98a47-a6b2-4489-a106-9bf22db6d527.png)
+
 ### Currency
 
 In this mode, the program will show the prices in a table. It can only show one currency at a time.
+
+![bonbast_live_currency](https://user-images.githubusercontent.com/24422125/194708542-241d2e11-35ec-4868-91ec-30ff7ca5e6e0.png)
 
 ## History
 
 This is useful if you want to see the prices for a specific date. You can use the `-d` or `--date` argument to specify
 the date. The date must be in the format `YYYY-MM-DD` or `YYYY/MM/DD`. Also, the date needs to be Gregorian.
+
+![bonbast_history](https://user-images.githubusercontent.com/24422125/194708555-fb5ada09-8e74-497d-8b61-74f27dea9220.png)
 
 ## Convert
 
@@ -74,10 +82,16 @@ the currency you want to convert to.
 If you want to convert from a currency to Rial, you need to use `-s` or `--source` argument to specify the currency you
 want to convert from.
 
+![bonbast_convert](https://user-images.githubusercontent.com/24422125/194708562-38f9f08c-9bc7-41d0-9889-04f38007b7f3.png)
+
 ## Json Output
 
 It can be useful if you want to use the result of the program in another program. You can also pipe the output in
 terminal to another program like `JQ`.
+
+![bonbast_export](https://user-images.githubusercontent.com/24422125/194708575-58fc19a5-9aa9-4e6d-b020-a40835d9d55d.png)
+
+![bonbast_export_pretty](https://user-images.githubusercontent.com/24422125/194708592-471a189b-e3f4-4a29-b36c-ad536d93822e.png)
 
 ## List of supported currencies
 
@@ -111,6 +125,10 @@ terminal to another program like `JQ`.
 | 🇧🇭 |  Bahraini Dinar   | BHD  |
 | 🇴🇲 |    Omani Rial     | OMR  |
 | 🇶🇦 |    Qatari Rial    | QAR  |
+
+---
+
+![bonbast_raycast](https://user-images.githubusercontent.com/24422125/194708612-a5f5557c-aab3-4ded-b500-9e08b594949c.png)
 
 ---
 
