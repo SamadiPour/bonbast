@@ -55,7 +55,7 @@ def get_token_from_main_page():
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
 
-    search = re.search(r"data:\"(.+)\"", r.text, re.MULTILINE)
+    search = re.search(r"param\s*=\s*\"(.+)\"", r.text, re.MULTILINE)
     if search is None or search.group(1) is None:
         raise SystemExit('Error: token not found in the main page')
 
