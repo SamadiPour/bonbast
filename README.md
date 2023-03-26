@@ -6,6 +6,26 @@ Bonbast is the most accurate and reputable foreign exchange trading data collect
 I don't alter any of the data in this tool; it all comes from bonbast. The sole purpose of this tool is to offer a
 different method of obtaining bonbast prices.
 
+## Contents
+1. [Installation](#installation)
+   * [Brew](#brew)
+   * [Python](#python)
+2. [Usage](#usage)
+   1. [Command Line](#command-line)
+      * [Main mode](#main-mode)
+      * [Live](#live)
+      * [Simple](#simple)
+      * [Currency](#currency)
+      * [History](#history)
+      * [Convert](#convert)
+      * [Json Output](#json-output)
+      * [Pretty Print Json](#pretty-print-json)
+      * [List of supported currencies](#list-of-supported-currencies)
+   2. [Usage in other programs](#usage-in-other-programs)
+   3. [Mac Shortcuts](#mac-shortcuts)
+   4. [Raycast](#raycast)
+3. [Development](#development)
+
 ## Installation
 
 ### Brew
@@ -50,18 +70,20 @@ python -m pip install -U bonbast
 
 ---
 
-# Usage
+## Usage
 
 I tried my best to display the price data in a variety of ways that would be useful in a variety of circumstances.
 
-## Main mode
+### Command Line
+
+#### Main mode
 
 This will be the default mode if you run the program without any arguments. It will show the current prices for gold,
 coins, and the IRR exchange rate in separate tables.
 
 ![bonbast](https://user-images.githubusercontent.com/24422125/194708514-e7b76a69-0671-4a6c-a025-51f29558f087.png)
 
-## Live
+#### Live
 
 In live mode, the program tries to update the prices in a specified interval. This is useful if you want to keep an eye
 on the prices.
@@ -69,53 +91,110 @@ on the prices.
 The website updates the prices every 30 seconds and the default value is 30 seconds as well. You can change this value
 by using the `-i` or `--interval` argument.
 
-### Simple
+```shell
+$ bonbast -i 60
+# Or
+$ python -m bonbast -i 60
+```
+
+#### Simple
 
 In this mode, the program will show the prices as text in the terminal.
 
+```shell
+$ bonbast live simple --show-only usd,eur,gbp,cad -i 300
+# Or
+$ python -m bonbast live simple --show-only usd,eur,gbp,cad -i 300
+```
+
 ![bonbast_live_simple](https://user-images.githubusercontent.com/24422125/194708537-09f98a47-a6b2-4489-a106-9bf22db6d527.png)
 
-### Currency
+#### Currency
 
 In this mode, the program will show the prices in a table. It can only show one currency at a time.
 
+```shell
+$ bonbast live currency --show-only usd,eur,gbp,cad -i 300
+# Or
+$ python -m bonbast live currency --show-only usd,eur,gbp,cad -i 300
+```
+
 ![bonbast_live_currency](https://user-images.githubusercontent.com/24422125/194708542-241d2e11-35ec-4868-91ec-30ff7ca5e6e0.png)
 
-## History
+#### History
 
 This is useful if you want to see the prices for a specific date. You can use the `-d` or `--date` argument to specify
 the date. The date must be in the format `YYYY-MM-DD` or `YYYY/MM/DD`. Also, the date needs to be Gregorian.
 
 The date is valid from 2012-10-09 to one day before the current date.
 
+```shell
+$ bonbast history --date 2020/10/10
+# Or
+$ python -m bonbast history --date 2020/10/10
+```
+
 ![bonbast_history](https://user-images.githubusercontent.com/24422125/194708555-fb5ada09-8e74-497d-8b61-74f27dea9220.png)
 
-## Convert
+#### Convert
 
 This is useful if you want to convert a value from one currency to Rial or from Rial to another currency.
+If you want to convert from a currency to Rial, you need to use `-s` or `--source` argument to specify the currency you
+want to convert from.
+
+```shell
+$ bonbast convert -s EUR 12.5
+# Or
+$ python -m bonbast convert -s EUR 12.5
+```
 
 If you want to convert from Rial to another currency, you need to use the `-d` or `--destination` argument to specify
 the currency you want to convert to.
 
-If you want to convert from a currency to Rial, you need to use `-s` or `--source` argument to specify the currency you
-want to convert from.
+```shell
+$ bonbast convert -d USD 1837850
+# Or
+$ python -m bonbast convert -d USD 1837850
+```
+
+You can also use `--only-buy` or `--only-sell` to specify which price you want to use.
+
+```shell
+$ bonbast convert -d USD 1837850 --only-buy
+$ bonbast convert -d USD 1837850 --only-sell
+# Or
+$ python -m bonbast convert -d USD 1837850 --only-buy
+$ python -m bonbast convert -d USD 1837850 --only-sell
+```
 
 ![bonbast_convert](https://user-images.githubusercontent.com/24422125/194708562-38f9f08c-9bc7-41d0-9889-04f38007b7f3.png)
 
-## Json Output
+#### Json Output
 
 It can be useful if you want to use the result of the program in another program. You can also pipe the output in
 terminal to another program like `JQ`.
 
+```shell
+$ bonbast export
+# Or
+$ python -m bonbast export
+```
+
 ![bonbast_export](https://user-images.githubusercontent.com/24422125/194708575-58fc19a5-9aa9-4e6d-b020-a40835d9d55d.png)
 
-### Pretty Print Json
+#### Pretty Print Json
 
 There is also a way to pretty print the json output. You can use the `--pretty` argument to do that. It helps to see the
 output in a more readable way.
+
+```shell
+$ bonbast export --pretty
+# Or
+$ python -m bonbast export --pretty
+```
 ![bonbast_export_pretty](https://user-images.githubusercontent.com/24422125/194708592-471a189b-e3f4-4a29-b36c-ad536d93822e.png)
 
-## List of supported currencies
+#### List of supported currencies
 
 | Flag | Currency          | Code |
 |:----:|-------------------|:----:|
@@ -150,16 +229,16 @@ output in a more readable way.
 
 ---
 
-# Usage in other programs
+### Usage in other programs
 
 There are few ways to use the program in other programs. The best way is to use the json output.
 
-## Mac Shortcuts
+### Mac Shortcuts
 
 You can use the json output or the convert function to create a shortcut in Mac. You can use the shortcut to show the
 currency price as a notification.
 
-## [Raycast](https://www.raycast.com/)
+### [Raycast](https://www.raycast.com/)
 
 Raycast is a tool for searching your Mac, launching applications, and controlling your computer, and it is far superior
 to Spotlight. You can use the json output to create a script command in Raycast. In this way, you can easily access the
@@ -171,9 +250,9 @@ I included an example script command in the `raycast` folder. You can use it to 
 
 ---
 
-# Development
+## Development
 
-## Setup
+### Setup
 
 1. Clone the repo
 2. Install the dependencies
@@ -186,7 +265,7 @@ pip install .
 python -m src.bonbast.main
 ```
 
-## Building the package
+### Building the package
 
 1. Install build dependencies
 2. Build the package
