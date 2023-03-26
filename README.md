@@ -8,6 +8,22 @@ different method of obtaining bonbast prices.
 
 ## Installation
 
+### Brew
+
+```
+brew install samadipour/bonbast/bonbast
+```
+
+or
+
+```
+brew tap samadipour/bonbast
+brew update
+brew install bonbast
+```
+
+### Python
+
 To install this program, you can to use pip:
 
 ```shell
