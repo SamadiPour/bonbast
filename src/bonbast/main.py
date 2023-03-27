@@ -28,10 +28,11 @@ def get_prices(show_only: List[str] = None):
     token = token_manager.generate()
     try:
         response = get_prices_from_api(token.value)
-        if show_only is not None and len(show_only) > 0:
+        if show_only is not None and show_only:
             response = list(response)
             for index, item in enumerate(response):
-                response[index] = [item for item in item if item.code.lower() in show_only]
+                response[index] = [
+                    item for item in item if item.code.lower() in show_only]
             response = tuple(response)
 
         return response
@@ -76,7 +77,6 @@ def cli(ctx, show_only):
 def live(ctx):
     if ctx.invoked_subcommand is None:
         print('Show full table with live prices / up and down arrows')
-    pass
 
 
 # ================ bonbast live graph ================
@@ -101,7 +101,8 @@ def live_simple(interval, show_only):
             collections = get_prices(show_only)
 
             prices_text = Text()
-            prices_text.append(f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n', style='bold')
+            prices_text.append(
+                f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}\n\n', style='bold')
 
             for collection_index, collection in enumerate(collections):
                 for index, model in enumerate(collection):
@@ -160,12 +161,16 @@ def live_currency(interval, currency):
             # add a row with the new information
             if type(item) is Currency or type(item) is Coin:
                 sell_symbol = f' {get_change_char(item.sell, old_model.sell)}' if old_model is not None else ''
-                sell_str = (item.formatted_sell if item.sell is not None else '-') + sell_symbol
-                sell_color = get_color(item.sell, None if old_model is None else old_model.sell)
+                sell_str = (
+                    item.formatted_sell if item.sell is not None else '-') + sell_symbol
+                sell_color = get_color(
+                    item.sell, None if old_model is None else old_model.sell)
 
                 buy_symbol = f' {get_change_char(item.buy, old_model.buy)}' if old_model is not None else ''
-                buy_str = (item.formatted_buy if item.buy is not None else '-') + buy_symbol
-                buy_color = get_color(item.buy, None if old_model is None else old_model.buy)
+                buy_str = (
+                    item.formatted_buy if item.buy is not None else '-') + buy_symbol
+                buy_color = get_color(
+                    item.buy, None if old_model is None else old_model.buy)
 
                 price = (
                     Text(sell_str, style=sell_color),
@@ -173,15 +178,18 @@ def live_currency(interval, currency):
                 )
             else:
                 price_char = f' {get_change_char(item.price, old_model.price)}' if old_model is not None else ''
-                price_str = (item.formatted_price if item.price is not None else '-') + price_char
-                price_color = get_color(item.price, None if old_model is None else old_model.price)
+                price_str = (
+                    item.formatted_price if item.price is not None else '-') + price_char
+                price_color = get_color(
+                    item.price, None if old_model is None else old_model.price)
 
                 price = (
                     Text(price_str, style=price_color),
                 )
 
             table.add_row(
-                Text(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), style=DEFAULT_TEXT_COLOR),
+                Text(datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                     style=DEFAULT_TEXT_COLOR),
                 Text(item.name, style=DEFAULT_TEXT_COLOR),
                 *price,
             )
@@ -201,21 +209,26 @@ def live_currency(interval, currency):
 @click.pass_context
 def convert(ctx, source, destination, amount, only_buy, only_sell):
     if source is None and destination is None:
-        raise click.BadOptionUsage('', 'Please specify source or destination currency')
+        raise click.BadOptionUsage(
+            '', 'Please specify source or destination currency')
 
     if source is not None and destination is not None:
-        raise click.BadOptionUsage('', 'Don\'t use --source and --destination together')
+        raise click.BadOptionUsage(
+            '', 'Don\'t use --source and --destination together')
 
     if only_buy and only_sell:
-        raise click.BadOptionUsage('', 'Don\'t use --only-buy and --only-sell together')
+        raise click.BadOptionUsage(
+            '', 'Don\'t use --only-buy and --only-sell together')
 
     currencies_list, _, __ = get_prices()
     if source is not None:
-        currency = next(currency for currency in currencies_list if currency.code.lower() == source.lower())
+        currency = next(
+            currency for currency in currencies_list if currency.code.lower() == source.lower())
         buy = format_toman(int(amount * currency.buy))
         sell = format_toman(int(amount * currency.sell))
     else:
-        currency = next(currency for currency in currencies_list if currency.code.lower() == destination.lower())
+        currency = next(currency for currency in currencies_list if currency.code.lower(
+        ) == destination.lower())
         buy = format_price(amount / currency.sell)
         sell = format_price(amount / currency.buy)
 
@@ -255,7 +268,7 @@ def export(pretty, expanded, show_only):
     prices = {}
     for item in items:
         for model in item:
-            prices.update(model.to_json())
+            prices |= model.to_json()
 
     if pretty:
         pprint(prices, expand_all=expanded)
