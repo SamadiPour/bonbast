@@ -267,7 +267,7 @@ or manually:
 2. Copy [bonbast.sh](./raycast_script/bonbast.sh) file to the Raycast `script-commands` folder.
 3. Follow the instructions below or read Raycast docs.
 
-![raycast-setup](https://github.com/SamadiPour/bonbast/blob/master/.github/setup-raycast?raw=true)
+![raycast-setup](https://github.com/SamadiPour/bonbast/blob/master/.github/setup-raycast.png?raw=true)
 
 ---
 
