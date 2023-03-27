@@ -10,10 +10,10 @@ DEFAULT_TEXT_COLOR = 'cyan'
 class Singleton(type):
     _instances = {}
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+    def __call__(self, *args, **kwargs):
+        if self not in self._instances:
+            self._instances[self] = super(Singleton, self).__call__(*args, **kwargs)
+        return self._instances[self]
 
 
 def format_toman(price: float) -> str:
@@ -31,7 +31,7 @@ def retry(retry_count=3, retry_delay=None, message=''):
             for _ in range(retry_count):
                 try:
                     return func(*args, **kwargs)
-                except:  # noqa
+                except Exception:
                     if retry_delay is not None:
                         time.sleep(retry_delay)
 
