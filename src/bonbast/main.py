@@ -23,7 +23,7 @@ except ImportError:
     from helpers.utils import *
 
 
-@retry(message='Error: token is expired. Try again later.')
+@retry(message='Error: The operation failed for an unknown reason.')
 def get_prices(show_only: List[str] = None):
     token = token_manager.generate()
     try:

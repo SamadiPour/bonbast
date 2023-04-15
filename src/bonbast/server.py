@@ -52,8 +52,12 @@ def get_token_from_main_page():
     try:
         r = requests.get(BASE_URL, headers=headers)
         r.raise_for_status()
+        
     except requests.exceptions.HTTPError as err:
-        raise SystemExit(err) from err
+        raise SystemExit(err)
+        
+    except requests.exceptions.ConnectionError as _:
+        raise SystemExit('Error: Failed to connect to bonbast')
 
     search = re.search(r"param\s*=\s*\"(.+)\"", r.text, re.MULTILINE)
     if search is None or search[1] is None:
@@ -98,7 +102,9 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
         r.raise_for_status()
         r = r.json()
     except requests.exceptions.HTTPError as err:
-        raise SystemExit(err) from err
+        raise SystemExit(err)
+    except requests.exceptions.ConnectionError as _:
+        raise SystemExit('Error: Failed to connect to bonbast')
 
     if 'reset' in r:
         raise ResetAPIError('Error: token is expired')

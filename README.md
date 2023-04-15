@@ -10,6 +10,7 @@ different method of obtaining bonbast prices.
 1. [Installation](#installation)
    * [Brew](#brew)
    * [Python](#python)
+   * [Raycast](#setup-for-raycast)
 2. [Usage](#usage)
    1. [Command Line](#command-line)
       * [Main mode](#main-mode)
@@ -247,6 +248,26 @@ prices in Raycast.
 I included an example script command in the `raycast` folder. You can use it to create your own script.
 
 ![bonbast_raycast](https://user-images.githubusercontent.com/24422125/194708612-a5f5557c-aab3-4ded-b500-9e08b594949c.png)
+
+#### Setup for Raycast
+
+You can use this [setup-raycast.sh](./raycast_script/setup-raycast.sh) script to setup the script command in Raycast. Then Follow the instructions in below image or read Raycast docs.
+
+```shell
+$ chmod +x setup-raycast.sh
+
+$ ./setup-raycast.sh standalone
+or
+$ ./setup-raycast.sh python
+```
+
+or manually:
+
+1. Enable the script command in Raycast.
+2. Copy [bonbast.sh](./raycast_script/bonbast.sh) file to the Raycast `script-commands` folder.
+3. Follow the instructions below or read Raycast docs.
+
+![raycast-setup](https://github.com/SamadiPour/bonbast/blob/master/.github/setup-raycast.png?raw=true)
 
 ---
 
