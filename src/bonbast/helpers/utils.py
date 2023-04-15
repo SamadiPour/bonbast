@@ -24,14 +24,23 @@ def format_price(price: float) -> str:
     return PRICE_FORMATTER.format(price)
 
 
+class RetryError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
 def retry(retry_count=3, retry_delay=None, message=''):
     def decorator_retry(func):
         @functools.wraps(func)
         def wrapper_retry(*args, **kwargs):
-            for _ in range(retry_count):
+            for i in range(retry_count):
                 try:
                     return func(*args, **kwargs)
-                except:  # noqa
+                except RetryError as e:
+                    if i == retry_count - 1:
+                        raise SystemExit(e.message)
+                except Exception as e:  # noqa
                     if retry_delay is not None:
                         time.sleep(retry_delay)
 
