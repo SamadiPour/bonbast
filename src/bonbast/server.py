@@ -60,7 +60,7 @@ def get_token_from_main_page():
         raise SystemExit('Error: Failed to connect to bonbast')
 
     search = re.search(r"param\s*=\s*\"(.+)\"", r.text, re.MULTILINE)
-    if search is None or search[1] is None:
+    if search is None or search.group(1) is None:
         raise SystemExit('Error: token not found in the main page')
 
     return search[1]
@@ -109,8 +109,22 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
     if 'reset' in r:
         raise ResetAPIError('Error: token is expired')
 
-    coins: List[Coin] = []
-    golds: List[Gold] = []
+    coins: List[Coin] = [
+        Coin(
+            coin,
+            Coin.VALUES[coin],
+            sell=int(r[coin]),
+            buy=int(r[f'{coin}{BUY}']),
+        )
+        for coin in Coin.VALUES
+        if f'{coin}' in r and f'{coin}{BUY}' in r
+    ]
+    
+    golds: List[Gold] = [
+        Gold(gold, Gold.VALUES[gold], price=int(r[gold]))
+        for gold in Gold.VALUES
+        if f'{gold}' in r
+    ]
 
     currencies: List[Currency] = [
         Currency(
@@ -122,21 +136,7 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
         for currency in Currency.VALUES
         if f'{currency}{BUY}' in r and f'{currency}{SELL}' in r
     ]
-    coins.extend(
-        Coin(
-            coin,
-            Coin.VALUES[coin],
-            sell=int(r[coin]),
-            buy=int(r[f'{coin}{BUY}']),
-        )
-        for coin in Coin.VALUES
-        if f'{coin}' in r and f'{coin}{BUY}' in r
-    )
-    golds.extend(
-        Gold(gold, Gold.VALUES[gold], price=int(r[gold]))
-        for gold in Gold.VALUES
-        if f'{gold}' in r
-    )
+
     return currencies, coins, golds
 
 
@@ -195,7 +195,7 @@ def get_graph_data(data):
     return dic
 
 
-def get_history(date: datetime = datetime.now() - timedelta(days=1)) -> List[Currency]:
+def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[Currency]:
     if date.date() < datetime(2012, 10, 9).date():
         raise SystemExit(
             'Error: date is too far in the past. Date must be greater than 2012-10-09')
