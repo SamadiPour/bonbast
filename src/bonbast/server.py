@@ -52,8 +52,10 @@ def get_token_from_main_page():
     try:
         r = requests.get(BASE_URL, headers=headers)
         r.raise_for_status()
+        
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
+        
     except requests.exceptions.ConnectionError as _:
         raise SystemExit('Error: Failed to connect to bonbast')
 
@@ -61,7 +63,7 @@ def get_token_from_main_page():
     if search is None or search.group(1) is None:
         raise SystemExit('Error: token not found in the main page')
 
-    return search.group(1)
+    return search[1]
 
 
 def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Gold]]:
@@ -107,44 +109,38 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
     if 'reset' in r:
         raise ResetAPIError('Error: token is expired')
 
-    currencies: List[Currency] = []
-    coins: List[Coin] = []
-    golds: List[Gold] = []
+    coins: List[Coin] = [
+        Coin(
+            coin,
+            Coin.VALUES[coin],
+            sell=int(r[coin]),
+            buy=int(r[f'{coin}{BUY}']),
+        )
+        for coin in Coin.VALUES
+        if f'{coin}' in r and f'{coin}{BUY}' in r
+    ]
+    
+    golds: List[Gold] = [
+        Gold(gold, Gold.VALUES[gold], price=int(r[gold]))
+        for gold in Gold.VALUES
+        if f'{gold}' in r
+    ]
 
-    for currency in Currency.VALUES:
-        if f'{currency}{BUY}' in r and f'{currency}{SELL}' in r:
-            currencies.append(Currency(
-                currency.upper(),
-                Currency.VALUES[currency],
-                sell=int(r[f'{currency}{SELL}']),
-                buy=int(r[f'{currency}{BUY}']),
-            ))
-
-    for coin in Coin.VALUES:
-        if f'{coin}' in r and f'{coin}{BUY}' in r:
-            coins.append(Coin(
-                coin,
-                Coin.VALUES[coin],
-                sell=int(r[coin]),
-                buy=int(r[f'{coin}{BUY}']),
-            ))
-
-    for gold in Gold.VALUES:
-        if f'{gold}' in r:
-            golds.append(Gold(
-                gold,
-                Gold.VALUES[gold],
-                price=int(r[gold])
-            ))
+    currencies: List[Currency] = [
+        Currency(
+            currency.upper(),
+            Currency.VALUES[currency],
+            sell=int(r[f'{currency}{SELL}']),
+            buy=int(r[f'{currency}{BUY}']),
+        )
+        for currency in Currency.VALUES
+        if f'{currency}{BUY}' in r and f'{currency}{SELL}' in r
+    ]
 
     return currencies, coins, golds
 
 
-def get_graph_data(
-        currency: str,
-        start_date: datetime = datetime.today() - timedelta(days=30),
-        end_date: datetime = datetime.today(),
-) -> Dict[str, int]:
+def get_graph_data(currency: str, start_date: datetime = datetime.now() - timedelta(days=30), end_date: datetime = datetime.now()) -> Dict[str, int]:
     """
         This function will make a request to bonbast.com/graph and make them in two array.
     """
@@ -168,36 +164,45 @@ def get_graph_data(
     }
 
     try:
-        request = requests.get(f'{BASE_URL}/graph/{currency}/{start_date.date()}/{end_date.date()}', headers=headers)
+        request = requests.get(
+            f'{BASE_URL}/graph/{currency}/{start_date.date()}/{end_date.date()}', headers=headers)
         request.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        raise SystemExit(err)
+        raise SystemExit(err) from err
 
     soup = BeautifulSoup(request.text, 'html.parser')
     for data in soup.find_all("script"):
         # get variables from script and convert them to list
         if "data: {" in data.text:
-            price_list = data.text.split("data: [")[1].split("]")[0].split(",")
-            date_list = data.text.split("labels: [")[1].split("]")[0].split(',')
+            return get_graph_data(data)
 
-            if len(price_list) != len(date_list):
-                raise SystemExit('Error: data inconsistency')
 
-            dic = {}
-            for i in range(len(price_list)):
-                price = int(price_list[i])
-                date = re.search(r'\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])', date_list[i]).group(0)
-                dic[date] = price
+def get_graph_data(data):
+    price_list = data.text.split("data: [")[1].split("]")[0].split(",")
+    date_list = data.text.split("labels: [")[1].split("]")[0].split(',')
 
-            return dic
+    if len(price_list) != len(date_list):
+        raise SystemExit('Error: data inconsistency')
+
+    dic = {}
+    for i in range(len(price_list)):
+        price = int(price_list[i])
+        date = re.search(
+            r'\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])', date_list[i]
+        )[0]
+        dic[date] = price
+
+    return dic
 
 
 def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[Currency]:
     if date.date() < datetime(2012, 10, 9).date():
-        raise SystemExit('Error: date is too far in the past. Date must be greater than 2012-10-09')
+        raise SystemExit(
+            'Error: date is too far in the past. Date must be greater than 2012-10-09')
 
-    if date.date() >= datetime.today().date():
-        raise SystemExit(f'Error: date must be less than today({date.today().date()}).')
+    if date.date() >= datetime.now().date():
+        raise SystemExit(
+            f'Error: date must be less than today({date.today().date()}).')
 
     headers = {
         'authority': 'bonbast.com',
@@ -216,17 +221,18 @@ def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[C
     }
 
     try:
-        request = requests.get(f'{BASE_URL}/archive/{date.strftime("%Y/%m/%d")}', headers=headers)
+        request = requests.get(
+            f'{BASE_URL}/archive/{date.strftime("%Y/%m/%d")}', headers=headers)
         request.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        raise SystemExit(err)
+        raise SystemExit(err) from err
 
     soup = BeautifulSoup(request.text, 'html.parser')
     tables = soup.findAll("table")
 
     # first and second table are currencies
     currencies: List[Currency] = []
-    for table in tables[0:1]:
+    for table in tables[:1]:
         for row in table.findAll('tr')[1:]:
             cells = row.findAll("td")
             currencies.append(Currency(

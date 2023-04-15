@@ -1,3 +1,4 @@
+import contextlib
 import os
 import pathlib
 import sys
@@ -56,7 +57,5 @@ class StorageManager(object):
     def delete_file(self) -> None:
         """ Delete the saved token from datadir
         """
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(self.file_path)
-        except FileNotFoundError:
-            pass

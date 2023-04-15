@@ -9,9 +9,8 @@ except ImportError:
 def print_version(ctx, param, value):
     if not value or ctx.resilient_parsing:
         return
-    else:
-        click.echo(bonbast_version)
-        ctx.exit()
+    click.echo(bonbast_version)
+    ctx.exit()
 
 
 def parse_show_only(ctx, param, value):
