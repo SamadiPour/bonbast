@@ -28,7 +28,7 @@ def get_prices(show_only: List[str] = None):
     token = token_manager.generate()
     try:
         response = get_prices_from_api(token.value)
-        if show_only is not None and show_only:
+        if show_only:
             response = list(response)
             for index, item in enumerate(response):
                 response[index] = [
@@ -268,7 +268,7 @@ def export(pretty, expanded, show_only):
     prices = {}
     for item in items:
         for model in item:
-            prices |= model.to_json()
+            prices.update(model.to_json())
 
     if pretty:
         pprint(prices, expand_all=expanded)
