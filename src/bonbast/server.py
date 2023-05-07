@@ -134,7 +134,7 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
             golds.append(Gold(
                 gold,
                 Gold.VALUES[gold],
-                price=int(r[gold])
+                price=float(r[gold])
             ))
 
     return currencies, coins, golds

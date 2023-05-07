@@ -14,12 +14,25 @@ class Gold:
     VALUES = {
         'mithqal': 'Gold Mithqal',
         'gol18': 'Gold Gram',
+        'ounce': 'Ounce',
+        'bitcoin': 'Bitcoin',
     }
 
     def __init__(self, code: str, name: str, price: float):
         self.code = code
         self.name = name
         self.price = price
+
+    @property
+    def price(self):
+        if self.code in ['mithqal', 'gol18']:
+            return int(self._price)
+        else:
+            return self._price
+
+    @price.setter
+    def price(self, value):
+        self._price = value
 
     @property
     def formatted_price(self) -> str:
