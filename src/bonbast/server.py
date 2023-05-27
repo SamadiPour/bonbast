@@ -11,8 +11,8 @@ except ImportError:
     from models import *
 
 BASE_URL = 'https://www.bonbast.com'
-USER_AGENT = 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
-             'Chrome/103.0.0.0 Mobile Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (Linux; Android 12.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
+             'Chrome/113.0.0.0 Mobile Safari/537.36'
 SELL = '1'
 BUY = '2'
 
@@ -54,10 +54,10 @@ def get_token_from_main_page():
         r.raise_for_status()
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
-    except requests.exceptions.ConnectionError as _:
+    except requests.exceptions.ConnectionError:
         raise SystemExit('Error: Failed to connect to bonbast')
 
-    search = re.search(r"param\s*=\s*\"(.+)\"", r.text, re.MULTILINE)
+    search = re.search(r"param\s*[=:]\s*\"(.+)\"", r.text, re.MULTILINE)
     if search is None or search.group(1) is None:
         raise SystemExit('Error: token not found in the main page')
 
@@ -77,7 +77,7 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
         'accept': 'application/json, text/javascript, */*; q=0.01',
         'accept-language': 'en-US,en;q=0.9,fa;q=0.8',
         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        'cookie': 'cookieconsent_status=true; st_bb=0',
+        'cookie': 'st_bb=0',
         'origin': 'https://bonbast.com',
         'referer': 'https://bonbast.com/',
         'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
@@ -90,18 +90,13 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
         'x-requested-with': 'XMLHttpRequest',
     }
 
-    data = {
-        'data': token,
-        'webdriver': 'false',
-    }
-
     try:
-        r = requests.post(f'{BASE_URL}/json', headers=headers, data=data)
+        r = requests.post(f'{BASE_URL}/json', headers=headers, data={'param': token})
         r.raise_for_status()
         r = r.json()
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
-    except requests.exceptions.ConnectionError as _:
+    except requests.exceptions.ConnectionError:
         raise SystemExit('Error: Failed to connect to bonbast')
 
     if 'reset' in r:
