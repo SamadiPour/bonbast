@@ -15,9 +15,10 @@ different method of obtaining bonbast prices.
    1. [Command Line](#command-line)
       * [Main mode](#main-mode)
       * [Live](#live)
-      * [Simple](#simple)
-      * [Currency](#currency)
+        * [Simple](#simple)
+        * [Currency](#currency)
       * [History](#history)
+      * [Graph](#graph)
       * [Convert](#convert)
       * [Json Output](#json-output)
       * [Pretty Print Json](#pretty-print-json)
@@ -92,13 +93,7 @@ on the prices.
 The website updates the prices every 30 seconds and the default value is 30 seconds as well. You can change this value
 by using the `-i` or `--interval` argument.
 
-```shell
-$ bonbast -i 60
-# Or
-$ python -m bonbast -i 60
-```
-
-#### Simple
+##### Simple
 
 In this mode, the program will show the prices as text in the terminal.
 
@@ -110,7 +105,7 @@ $ python -m bonbast live simple --show-only usd,eur,gbp,cad -i 300
 
 ![bonbast_live_simple](https://user-images.githubusercontent.com/24422125/194708537-09f98a47-a6b2-4489-a106-9bf22db6d527.png)
 
-#### Currency
+##### Currency
 
 In this mode, the program will show the prices in a table. It can only show one currency at a time.
 
@@ -136,6 +131,25 @@ $ python -m bonbast history --date 2020/10/10
 ```
 
 ![bonbast_history](https://user-images.githubusercontent.com/24422125/194708555-fb5ada09-8e74-497d-8b61-74f27dea9220.png)
+
+#### Graph
+
+This is useful if you want to see the price of a currency in a specific date range. You can use the `--start-date` 
+argument to specify the start date and `--end-date` for the end date. The date must be in the format `YYYY-MM-DD` 
+or `YYYY/MM/DD`. Also, the date needs to be Gregorian.
+
+If start or end date is not specified, the end date will default to today and the start date will be set to 30 days prior 
+to the end date.
+
+The date is valid from 2012-10-09 to one day before the current date.
+
+```shell
+$ bonbast graph eur
+$ bonbast graph eur --start-date 2023-01-02
+$ bonbast graph eur --start-date 2023-02-12 --end-date 2023-05-09
+# Or
+$ python -m bonbast graph eur
+```
 
 #### Convert
 
