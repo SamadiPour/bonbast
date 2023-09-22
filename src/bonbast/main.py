@@ -65,9 +65,32 @@ def cli(ctx, show_only):
             console.print(get_gold_table(golds_list))
 
 
-# @cli.command()
-# def graph():
-#     click_helper.echo('Draw graph without live update')
+# ================ bonbast graph ================
+@cli.command()
+@click.argument('currency', type=click.Choice(Currency.VALUES.keys(), case_sensitive=False))
+@click.option(
+    '--start-date',
+    type=click.DateTime(formats=["%Y/%m/%d", '%Y-%m-%d']),
+    prompt=False,
+    help='Start Date for the range. If not specified, it will default to a 30-day period from the end date.'
+)
+@click.option(
+    '--end-date',
+    type=click.DateTime(formats=["%Y/%m/%d", '%Y-%m-%d']),
+    prompt=False,
+    help='End Date for the range. If not specified, it will default to today.'
+)
+def graph(currency, start_date, end_date):
+    end_date = end_date or datetime.today()
+    start_date = start_date or end_date - timedelta(days=30)
+
+    if end_date <= start_date:
+        raise click.BadOptionUsage('', 'End date can\'t be the same or before the start date.')
+
+    result = get_graph_data(currency.lower(), start_date, end_date)
+    for date, rate in result.items():
+        click.echo(f'{date.date()}: {rate}')
+    pass
 
 
 # ================ bonbast live ================
