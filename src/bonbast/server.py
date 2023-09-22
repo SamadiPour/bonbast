@@ -12,7 +12,7 @@ except ImportError:
 
 BASE_URL = 'https://www.bonbast.com'
 USER_AGENT = 'Mozilla/5.0 (Linux; Android 12.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) ' \
-             'Chrome/113.0.0.0 Mobile Safari/537.36'
+             'Chrome/117.0.0.0 Mobile Safari/537.36'
 SELL = '1'
 BUY = '2'
 
@@ -38,7 +38,7 @@ def get_token_from_main_page():
         'cache-control': 'no-cache',
         'cookie': 'cookieconsent_status=true; st_bb=0',
         'pragma': 'no-cache',
-        'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
+        'sec-ch-ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
         'sec-ch-ua-mobile': '?1',
         'sec-ch-ua-platform': '"Android"',
         'sec-fetch-dest': 'document',
@@ -80,7 +80,7 @@ def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Go
         'cookie': 'st_bb=0',
         'origin': 'https://bonbast.com',
         'referer': 'https://bonbast.com/',
-        'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
+        'sec-ch-ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
         'sec-ch-ua-mobile': '?1',
         'sec-ch-ua-platform': '"Android"',
         'sec-fetch-dest': 'empty',
@@ -139,19 +139,19 @@ def get_graph_data(
         currency: str,
         start_date: datetime = datetime.today() - timedelta(days=30),
         end_date: datetime = datetime.today(),
-) -> Dict[str, int]:
+) -> Dict[datetime, int]:
     """
         This function will make a request to bonbast.com/graph and make them in two array.
     """
 
     headers = {
         'authority': 'bonbast.com',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'en-US,en;q=0.9,fa;q=0.8',
         'cache-control': 'max-age=0',
-        'cookie': 'cookieconsent_status=true; st_bb=0',
-        'referer': 'https://bonbast.com/',
-        'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
+        'content-type': 'application/x-www-form-urlencoded',
+        'cookie': 'st_bb=0',
+        'sec-ch-ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
         'sec-ch-ua-mobile': '?1',
         'sec-ch-ua-platform': '"Android"',
         'sec-fetch-dest': 'document',
@@ -163,7 +163,11 @@ def get_graph_data(
     }
 
     try:
-        request = requests.get(f'{BASE_URL}/graph/{currency}/{start_date.date()}/{end_date.date()}', headers=headers)
+        request = requests.post(f'{BASE_URL}/graph', headers=headers, data={
+            'currency': currency,
+            'stdate': start_date.date(),
+            'endate': end_date.date(),
+        })
         request.raise_for_status()
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
@@ -182,7 +186,7 @@ def get_graph_data(
             for i in range(len(price_list)):
                 price = int(price_list[i])
                 date = re.search(r'\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])', date_list[i]).group(0)
-                dic[date] = price
+                dic[datetime.strptime(date, "%Y-%m-%d")] = price
 
             return dic
 
@@ -199,7 +203,7 @@ def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[C
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'accept-language': 'en-US,en;q=0.9,fa;q=0.8',
         'cache-control': 'max-age=0',
-        'sec-ch-ua': '".Not/A)Brand";v="99", "Google Chrome";v="103", "Chromium";v="103"',
+        'sec-ch-ua': '"Google Chrome";v="117", "Not;A=Brand";v="8", "Chromium";v="117"',
         'sec-ch-ua-mobile': '?1',
         'sec-ch-ua-platform': '"Android"',
         'sec-fetch-dest': 'document',
