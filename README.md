@@ -151,6 +151,8 @@ $ bonbast graph eur --start-date 2023-02-12 --end-date 2023-05-09
 $ python -m bonbast graph eur
 ```
 
+![bonbast_graph](https://github.com/SamadiPour/bonbast/assets/24422125/eced2062-ed93-4004-a274-cec11708463b)
+
 #### Convert
 
 This is useful if you want to convert a value from one currency to Rial or from Rial to another currency.
