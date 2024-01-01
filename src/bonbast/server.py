@@ -215,7 +215,7 @@ def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[C
     }
 
     try:
-        request = requests.get(f'{BASE_URL}/archive/{date.strftime("%Y/%m/%d")}', headers=headers)
+        request = requests.post(f'{BASE_URL}/archive', headers=headers, data={'date': date.strftime("%Y-%m-%d")})
         request.raise_for_status()
     except requests.exceptions.HTTPError as err:
         raise SystemExit(err)
