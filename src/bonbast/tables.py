@@ -1,6 +1,6 @@
 import math
 
-from typing import List
+from typing import List, Optional
 from rich.table import Table
 from rich.console import ConsoleRenderable
 
@@ -29,22 +29,24 @@ def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
     return table
 
 
-def get_currencies_table(currencies: List[Currency], columns: int) -> ConsoleRenderable:
+def get_currencies_table(currencies: List[Currency], columns: int) -> Optional[ConsoleRenderable]:
     """ Gets a list of data.Currency and generates currencies table
     """
 
-    filtered_currencies = [
+    filtered = [
         currency for currency in currencies if
         (currency.sell is not None or currency.buy is not None) and (currency.sell != 0 or currency.buy != 0)
     ]
 
-    if len(filtered_currencies) < 6:
+    if len(filtered) == 0:
+        return None
+    elif len(filtered) < 6:
         columns = 1
 
-    each_part_count = math.ceil(len(filtered_currencies) / columns)
+    each_part_count = math.ceil(len(filtered) / columns)
     currencies_parts = [
-        filtered_currencies[i:i + each_part_count] for i in
-        range(0, len(filtered_currencies), each_part_count)
+        filtered[i:i + each_part_count] for i in
+        range(0, len(filtered), each_part_count)
     ]
     tables = [__get_currencies_sub_table(part) for part in currencies_parts]
 
@@ -57,9 +59,17 @@ def get_currencies_table(currencies: List[Currency], columns: int) -> ConsoleRen
     return grid
 
 
-def get_coins_table(coins: List[Coin]) -> ConsoleRenderable:
+def get_coins_table(coins: List[Coin]) -> Optional[ConsoleRenderable]:
     """ Gets a list of data.Coin and generates coins table
     """
+    filtered = [
+        coin for coin in coins if
+        (coin.sell is not None or coin.buy is not None) and (coin.sell != 0 or coin.buy != 0)
+    ]
+
+    if len(filtered) == 0:
+        return None
+
     table = Table(title="Coins")
 
     table.add_column("Coin", style="cyan")
@@ -77,9 +87,17 @@ def get_coins_table(coins: List[Coin]) -> ConsoleRenderable:
 
 
 # get gold and it's price in a table
-def get_gold_table(golds: List[Gold]) -> ConsoleRenderable:
+def get_gold_table(golds: List[Gold]) -> Optional[ConsoleRenderable]:
     """ Gets a list of data.Gold and generates golds table
     """
+    filtered = [
+        gold for gold in golds if
+        gold.price is not None and gold.price != 0
+    ]
+
+    if len(filtered) == 0:
+        return None
+
     table = Table(title="Gold")
 
     table.add_column("Gold", style="cyan")

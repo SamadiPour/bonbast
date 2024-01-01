@@ -19,7 +19,8 @@ BUY = '2'
 
 def int_try_parse(value) -> Optional[int]:
     try:
-        return int(value)
+        parsed = int(value)
+        return None if parsed == 0 else parsed
     except ValueError:
         return None
 
@@ -191,7 +192,7 @@ def get_graph_data(
             return dic
 
 
-def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[Currency]:
+def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> Tuple[List[Currency], List[Coin]]:
     if date.date() < datetime(2012, 10, 9).date():
         raise SystemExit('Error: date is too far in the past. Date must be greater than 2012-10-09')
 
@@ -221,13 +222,13 @@ def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[C
         raise SystemExit(err)
 
     soup = BeautifulSoup(request.text, 'html.parser')
-    tables = soup.findAll("table")
+    tables = soup.findAll('table')
 
     # first and second table are currencies
     currencies: List[Currency] = []
     for table in tables[0:1]:
         for row in table.findAll('tr')[1:]:
-            cells = row.findAll("td")
+            cells = row.findAll('td')
             currencies.append(Currency(
                 cells[0].text.lower(),
                 Currency.VALUES[cells[0].text.lower()],
@@ -235,20 +236,19 @@ def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> List[C
                 buy=int_try_parse(cells[3].text),
             ))
 
-    # todo: parse it correctly
     # last table is coins
-    # coins: List[Coin] = []
-    # for table in tables[-1:]:
-    #     for row in table.findAll('tr')[1:]:
-    #         cells = row.findAll("td")
-    #         coins.append(Coin(
-    #             cells[0].text.lower(),
-    #             Coin.VALUES[cells[0].text.lower()],
-    #             sell=int_try_parse(cells[2].text),
-    #             buy=int_try_parse(cells[3].text),
-    #         ))
+    coins: List[Coin] = []
+    for table in tables[-1:]:
+        for row in table.findAll('tr')[1:]:
+            cells = row.findAll('td')
+            coins.append(Coin(
+                next(key for key, value in Coin.VALUES.items() if value.lower() == cells[0].text.lower()),
+                cells[0].text.lower(),
+                sell=int_try_parse(cells[1].text),
+                buy=int_try_parse(cells[2].text),
+            ))
 
-    return currencies
+    return currencies, coins
 
 
 class ResetAPIError(Exception):

@@ -55,14 +55,16 @@ def cli(ctx, show_only):
         currencies_list, coins_list, golds_list = get_prices(show_only)
         console = Console()
 
-        if currencies_list is not None and len(currencies_list) > 0:
-            console.print(get_currencies_table(currencies_list, columns=2))
+        currency_table = get_currencies_table(currencies_list, columns=2)
+        coin_table = get_coins_table(coins_list)
+        gold_table = get_gold_table(golds_list)
 
-        if coins_list is not None and len(coins_list) > 0:
-            console.print(get_coins_table(coins_list))
-
-        if golds_list is not None and len(golds_list) > 0:
-            console.print(get_gold_table(golds_list))
+        if currency_table:
+            console.print(currency_table)
+        if coin_table:
+            console.print(coin_table)
+        if gold_table:
+            console.print(gold_table)
 
 
 # ================ bonbast graph ================
@@ -259,9 +261,16 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
     help='Date to get prices for'
 )
 def history(date):
-    currencies = get_history(date)
+    currencies_list, coins_list = get_history(date)
     console = Console()
-    console.print(get_currencies_table(currencies, 2))
+
+    currency_table = get_currencies_table(currencies_list, columns=2)
+    coin_table = get_coins_table(coins_list)
+
+    if currency_table:
+        console.print(currency_table)
+    if coin_table:
+        console.print(coin_table)
 
 
 # ================ bonbast export ================
