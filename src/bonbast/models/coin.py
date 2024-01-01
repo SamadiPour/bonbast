@@ -42,6 +42,9 @@ class Coin:
             }
         }
 
+    def is_valid(self) -> bool:
+        return (self.sell is not None and self.sell > 0) or (self.buy is not None and self.buy > 0)
+
     def assemble_simple_text(self, old_coin: Coin, **kwargs) -> Text:
         return Text.assemble(
             f'{self.name}: ',

@@ -71,6 +71,9 @@ class Currency:
             }
         }
 
+    def is_valid(self) -> bool:
+        return (self.sell is not None and self.sell > 0) or (self.buy is not None and self.buy > 0)
+
     def assemble_simple_text(self, old_currency: Currency, with_flag: bool = False) -> Text:
         return Text.assemble(
             (f'{self.flag} ' if with_flag else '') + f'{self.code}: ',

@@ -1,5 +1,10 @@
-import time
 import functools
+import json
+import time
+
+import click
+from rich.console import Console
+from rich.pretty import pprint
 
 TOMAN_FORMATTER = "{:,}"
 PRICE_FORMATTER = "{:,.2f}"
@@ -73,3 +78,44 @@ def get_change_char(price, old_price):
         return '↓'
     else:
         return '-'
+
+
+def del_none(d):
+    """
+    Delete keys with the value ``None`` in a dictionary, recursively.
+
+    This alters the input so you may wish to ``copy`` the dict first.
+    """
+    # For Python 3, write `list(d.items())`; `d.items()` won’t work
+    # For Python 2, write `d.items()`; `d.iteritems()` won’t work
+    for key, value in list(d.items()):
+        if value is None:
+            del d[key]
+        elif isinstance(value, dict):
+            del_none(value)
+    return d  # For convenience
+
+
+def filter_valids(*items):
+    return ([e for e in item if e.is_valid()] for item in items)
+
+
+def print_json(*items, pretty=False, expanded=False):
+    prices = {}
+    for item in items:
+        for model in item:
+            prices.update(model.to_json())
+
+    prices = del_none(prices)
+
+    if pretty:
+        pprint(prices, expand_all=expanded)
+    else:
+        click.echo(json.dumps(prices, ensure_ascii=False))
+
+
+def print_tables(*items):
+    console = Console()
+    for item in items:
+        if item:
+            console.print(item)

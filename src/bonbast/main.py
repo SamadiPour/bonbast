@@ -1,8 +1,4 @@
-import json
-
-from rich.console import Console
 from rich.live import Live
-from rich.pretty import pprint
 from rich.text import Text
 
 try:
@@ -53,18 +49,13 @@ def get_prices(show_only: List[str] = None):
 def cli(ctx, show_only):
     if ctx.invoked_subcommand is None:
         currencies_list, coins_list, golds_list = get_prices(show_only)
-        console = Console()
+        currencies_list, coins_list, golds_list = filter_valids(currencies_list, coins_list, golds_list)
 
         currency_table = get_currencies_table(currencies_list, columns=2)
         coin_table = get_coins_table(coins_list)
         gold_table = get_gold_table(golds_list)
 
-        if currency_table:
-            console.print(currency_table)
-        if coin_table:
-            console.print(coin_table)
-        if gold_table:
-            console.print(gold_table)
+        print_tables(currency_table, coin_table, gold_table)
 
 
 # ================ bonbast graph ================
@@ -72,7 +63,7 @@ def cli(ctx, show_only):
 @click.argument('currency', type=click.Choice(Currency.VALUES.keys(), case_sensitive=False))
 @click.option(
     '--start-date',
-    type=click.DateTime(formats=["%Y/%m/%d", '%Y-%m-%d']),
+    type=click.DateTime(formats=["%Y    /%m/%d", '%Y-%m-%d']),
     prompt=False,
     help='Start Date for the range. If not specified, it will default to a 30-day period from the end date.'
 )
@@ -102,13 +93,6 @@ def live(ctx):
     if ctx.invoked_subcommand is None:
         print('Show full table with live prices / up and down arrows')
     pass
-
-
-# ================ bonbast live graph ================
-# @live.command('graph')
-# def live_graph():
-#     print('show graph updating live every x seconds')
-#     pass
 
 
 # ================ bonbast live simple ================
@@ -260,17 +244,19 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
     prompt=True,
     help='Date to get prices for'
 )
-def history(date):
+@click.option('--json', 'is_json', is_flag=True, default=False, help='Output in JSON format')
+@click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
+@click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
+def history(date, is_json, pretty, expanded):
     currencies_list, coins_list = get_history(date)
-    console = Console()
+    currencies_list, coins_list = filter_valids(currencies_list, coins_list)
 
-    currency_table = get_currencies_table(currencies_list, columns=2)
-    coin_table = get_coins_table(coins_list)
-
-    if currency_table:
-        console.print(currency_table)
-    if coin_table:
-        console.print(coin_table)
+    if not is_json:
+        currency_table = get_currencies_table(currencies_list, columns=2)
+        coin_table = get_coins_table(coins_list)
+        print_tables(currency_table, coin_table)
+    else:
+        print_json(currencies_list, coins_list, pretty=pretty, expanded=expanded)
 
 
 # ================ bonbast export ================
@@ -283,16 +269,8 @@ def history(date):
     callback=parse_show_only,
 )
 def export(pretty, expanded, show_only):
-    items = get_prices(show_only)
-    prices = {}
-    for item in items:
-        for model in item:
-            prices.update(model.to_json())
-
-    if pretty:
-        pprint(prices, expand_all=expanded)
-    else:
-        click.echo(json.dumps(prices, ensure_ascii=False))
+    currencies_list, coins_list, golds_list = get_prices(show_only)
+    print_json(currencies_list, coins_list, golds_list, pretty=pretty, expanded=expanded)
 
 
 if __name__ == '__main__':

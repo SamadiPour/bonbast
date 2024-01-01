@@ -46,6 +46,9 @@ class Gold:
             }
         }
 
+    def is_valid(self) -> bool:
+        return self.price is not None and self.price > 0
+
     def assemble_simple_text(self, old_gold: Gold, **kwargs) -> Text:
         return Text.assemble(
             f'{self.code}: ',
