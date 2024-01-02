@@ -226,7 +226,7 @@ def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> Tuple[
 
     # first and second table are currencies
     currencies: List[Currency] = []
-    for table in tables[0:1]:
+    for table in tables[:2]:
         for row in table.findAll('tr')[1:]:
             cells = row.findAll('td')
             currencies.append(Currency(

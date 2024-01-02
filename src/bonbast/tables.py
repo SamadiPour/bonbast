@@ -32,6 +32,9 @@ def __get_currencies_sub_table(currencies: List[Currency]) -> ConsoleRenderable:
 def get_currencies_table(currencies: List[Currency], columns: int) -> Optional[ConsoleRenderable]:
     """ Gets a list of data.Currency and generates currencies table
     """
+    if len(currencies) == 0:
+        return None
+
     if len(currencies) < 6:
         columns = 1
 
@@ -54,6 +57,9 @@ def get_currencies_table(currencies: List[Currency], columns: int) -> Optional[C
 def get_coins_table(coins: List[Coin]) -> Optional[ConsoleRenderable]:
     """ Gets a list of data.Coin and generates coins table
     """
+    if len(coins) == 0:
+        return None
+
     table = Table(title="Coins")
 
     table.add_column("Coin", style="cyan")
@@ -74,6 +80,9 @@ def get_coins_table(coins: List[Coin]) -> Optional[ConsoleRenderable]:
 def get_gold_table(golds: List[Gold]) -> Optional[ConsoleRenderable]:
     """ Gets a list of data.Gold and generates golds table
     """
+    if len(golds) == 0:
+        return None
+
     table = Table(title="Gold")
 
     table.add_column("Gold", style="cyan")
