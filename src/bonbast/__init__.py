@@ -1,2 +1,2 @@
 # Version of bonbast package
-bonbast_version = "1.0.0"
+bonbast_version = "1.0.1"
