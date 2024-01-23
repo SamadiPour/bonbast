@@ -10,6 +10,7 @@ different method of obtaining bonbast prices.
 1. [Installation](#installation)
    * [Brew](#brew)
    * [Python](#python)
+   * [Arch Linux (AUR)](#arch-linux-aur)
    * [Raycast](#setup-for-raycast)
 2. [Usage](#usage)
    1. [Command Line](#command-line)
@@ -69,6 +70,20 @@ pip install -U bonbast
 #or
 python -m pip install -U bonbast
 ```
+
+### Arch Linux (AUR)
+
+To install the package on Arch Linux or any Arch-based distro, you can use any AUR (Arch User Repository) package manager, such as [yay](https://github.com/Jguer/yay) or [paru](https://github.com/Morganamilo/paru):
+```shell
+yay -S python-bonbast
+```
+or manually build the package from the AUR source:
+```shell
+git clone https://aur.archlinux.org/python-bonbast.git
+cd python-bonbast
+makepkg -si
+```
+The package is available in the [Arch User Repository](https://aur.archlinux.org/packages/python-bonbast/).
 
 ---
 
