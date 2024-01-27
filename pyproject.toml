@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bonbast"
-version = "1.0.1"
+version = "1.0.2"
 description = "Get currencies exchange rates for IRR from Bonbast.com"
 readme = "README.md"
 authors = [
@@ -41,7 +41,7 @@ repository = "https://github.com/SamadiPour/bonbast"
 
 
 [tool.bumpver]
-current_version = "1.0.1"
+current_version = "1.0.2"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 commit = true
