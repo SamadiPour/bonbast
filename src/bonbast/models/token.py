@@ -2,11 +2,23 @@ import datetime
 
 
 class Token:
+    """
+    Represents an authentication token with a limited lifespan.
+
+    Attributes:
+        value (str): The value of the token.
+        life_span (int): The lifespan of the token in seconds.
+        generated_at (datetime.datetime): The datetime when the token was generated.
+    """
+
     def __init__(self, value: str, life_span: int = 600, generated_at: datetime.datetime = datetime.datetime.now()):
         """
-        :param value: token value
-        :param life_span: token life span in seconds
-        :param generated_at: token generation date
+        Initializes a new instance of the Token class.
+
+        Args:
+            value (str): The value of the token.
+            life_span (int): The lifespan of the token in seconds. Defaults to 600.
+            generated_at (datetime.datetime): The datetime when the token was generated. Defaults to now.
         """
         self.life_span = life_span
         self.generated_at = generated_at
@@ -14,6 +26,9 @@ class Token:
 
     def is_expired(self) -> bool:
         """
-        :return: True if token is expired
+        Determines if the token has expired based on its lifespan and generation time.
+
+        Returns:
+            bool: True if the token is expired, False otherwise.
         """
         return datetime.datetime.now() - self.generated_at > datetime.timedelta(seconds=self.life_span)

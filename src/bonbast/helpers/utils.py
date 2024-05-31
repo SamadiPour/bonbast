@@ -13,6 +13,9 @@ DEFAULT_TEXT_COLOR = 'cyan'
 
 
 class Singleton(type):
+    """
+    A metaclass for implementing the Singleton design pattern.
+    """
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
@@ -22,20 +25,42 @@ class Singleton(type):
 
 
 def format_toman(price: float) -> str:
+    """
+    Formats a price as a string in Toman currency format.
+
+    :param price: The price to format.
+    :return: The formatted price string.
+    """
     return TOMAN_FORMATTER.format(price)
 
 
 def format_price(price: float) -> str:
+    """
+    Formats a price as a string with two decimal places.
+
+    :param price: The price to format.
+    :return: The formatted price string.
+    """
     return PRICE_FORMATTER.format(price)
 
 
 class RetryError(Exception):
+    """
+    Custom exception class for retry failures.
+    """
     def __init__(self, message):
         self.message = message
         super().__init__(message)
 
 
 def retry(retry_count=3, retry_delay=None, message=''):
+    """
+    A decorator for retrying a function call with a specified number of attempts and delay.
+
+    :param retry_count: Number of retry attempts.
+    :param retry_delay: Delay between retries.
+    :param message: Message to display on failure.
+    """
     def decorator_retry(func):
         @functools.wraps(func)
         def wrapper_retry(*args, **kwargs):
@@ -57,6 +82,13 @@ def retry(retry_count=3, retry_delay=None, message=''):
 
 
 def get_color(price, old_price):
+    """
+    Determines the color based on the comparison of the current and old price.
+
+    :param price: The current price.
+    :param old_price: The old price.
+    :return: The color string.
+    """
     if old_price is None or price is None:
         return ''
 
@@ -69,6 +101,13 @@ def get_color(price, old_price):
 
 
 def get_change_char(price, old_price):
+    """
+    Determines the change character based on the comparison of the current and old price.
+
+    :param price: The current price.
+    :param old_price: The old price.
+    :return: The change character string.
+    """
     if old_price is None or price is None:
         return ''
 
@@ -82,25 +121,37 @@ def get_change_char(price, old_price):
 
 def del_none(d):
     """
-    Delete keys with the value ``None`` in a dictionary, recursively.
+    Deletes keys with the value `None` in a dictionary, recursively.
 
-    This alters the input so you may wish to ``copy`` the dict first.
+    :param d: The dictionary to process.
+    :return: The processed dictionary.
     """
-    # For Python 3, write `list(d.items())`; `d.items()` won’t work
-    # For Python 2, write `d.items()`; `d.iteritems()` won’t work
     for key, value in list(d.items()):
         if value is None:
             del d[key]
         elif isinstance(value, dict):
             del_none(value)
-    return d  # For convenience
+    return d
 
 
 def filter_valids(*items):
+    """
+    Filters out invalid items from a list of items based on their `is_valid` method.
+
+    :param items: The items to filter.
+    :return: A generator of filtered items.
+    """
     return ([e for e in item if e.is_valid()] for item in items)
 
 
 def print_json(*items, pretty=False, expanded=False):
+    """
+    Prints items as JSON, with options for pretty printing and expansion.
+
+    :param items: The items to print.
+    :param pretty: Whether to pretty print.
+    :param expanded: Whether to expand all fields.
+    """
     prices = {}
     for item in items:
         for model in item:
@@ -115,6 +166,11 @@ def print_json(*items, pretty=False, expanded=False):
 
 
 def print_tables(*items):
+    """
+    Prints items as tables using the Rich library.
+
+    :param items: The items to print.
+    """
     console = Console()
     for item in items:
         if item:

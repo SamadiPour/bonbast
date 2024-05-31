@@ -1,3 +1,7 @@
+"""
+This module provides a mapping of currency codes to their respective flag emojis.
+"""
+
 currency_flags = {
     "usd": "🇺🇸",
     "eur": "🇪🇺",
