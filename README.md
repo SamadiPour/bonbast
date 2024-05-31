@@ -28,7 +28,6 @@ different method of obtaining bonbast prices.
    3. [Mac Shortcuts](#mac-shortcuts)
    4. [Raycast](#raycast)
 3. [Development](#development)
-4. [Code Quality Checks](#code-quality-checks)
 
 ## Installation
 
@@ -329,29 +328,3 @@ python -m pip install ".[build]"
 python -m build
 python -m pip install dist/*.whl
 ```
-
-## Code Quality Checks
-
-To ensure the code quality and consistency of the Bonbast project, developers are encouraged to run `flake8` and `black` checks before committing changes. These tools help in identifying and fixing common coding style issues and formatting the code according to the project's coding standards.
-
-### Running flake8
-
-`flake8` is a tool for checking the style and quality of Python code. To run `flake8` on the Bonbast project, use the following command:
-
-```shell
-flake8 src tests
-```
-
-This command will check the code in the `src` and `tests` directories for any style issues or errors.
-
-### Running black
-
-`black` is an automatic code formatter for Python that adheres to the PEP 8 style guide. To format the code in the Bonbast project with `black`, use the following command:
-
-```shell
-black src tests
-```
-
-This command will automatically format all Python files in the `src` and `tests` directories to ensure consistent coding style throughout the project.
-
-By regularly running these checks and adhering to the coding standards, developers can maintain a high level of code quality and readability in the Bonbast project.
