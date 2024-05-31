@@ -39,6 +39,9 @@ bonbast = "bonbast.__main__:run"
 repository = "https://github.com/SamadiPour/bonbast"
 #documentation = ""
 
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.2"
+black = "^21.5b2"
 
 [tool.bumpver]
 current_version = "1.0.2"

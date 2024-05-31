@@ -21,6 +21,12 @@ except ImportError:
 
 @retry(message='Error: The operation failed for an unknown reason.')
 def get_prices(show_only: List[str] = None):
+    """
+    Retrieves prices for currencies, coins, and golds, optionally filtered by a list of codes.
+
+    :param show_only: Optional list of codes to filter the results.
+    :return: Tuple of lists containing currencies, coins, and golds.
+    """
     token = token_manager.generate()
     try:
         response = get_prices_from_api(token.value)
@@ -36,7 +42,6 @@ def get_prices(show_only: List[str] = None):
         raise e
 
 
-# ================ bonbast ================
 @click.group(invoke_without_command=True)
 @click.option('-v', '--version', is_flag=True, callback=print_version,
               expose_value=False, is_eager=True)
@@ -47,6 +52,12 @@ def get_prices(show_only: List[str] = None):
 )
 @click.pass_context
 def cli(ctx, show_only):
+    """
+    Main CLI group function to handle the base command and options.
+
+    :param ctx: Click context.
+    :param show_only: Filter for showing only specified currencies, coins, or golds.
+    """
     if ctx.invoked_subcommand is None:
         currencies_list, coins_list, golds_list = get_prices(show_only)
         currencies_list, coins_list, golds_list = filter_valids(currencies_list, coins_list, golds_list)
@@ -58,7 +69,6 @@ def cli(ctx, show_only):
         print_tables(currency_table, coin_table, gold_table)
 
 
-# ================ bonbast graph ================
 @cli.command()
 @click.argument('currency', type=click.Choice(Currency.VALUES.keys(), case_sensitive=False))
 @click.option(
@@ -74,6 +84,13 @@ def cli(ctx, show_only):
     help='End Date for the range. If not specified, it will default to today.'
 )
 def graph(currency, start_date, end_date):
+    """
+    CLI command to display graph data for a specified currency over a date range.
+
+    :param currency: The currency code.
+    :param start_date: The start date for the range.
+    :param end_date: The end date for the range.
+    """
     end_date = end_date or datetime.today()
     start_date = start_date or end_date - timedelta(days=30)
 
@@ -86,16 +103,19 @@ def graph(currency, start_date, end_date):
     pass
 
 
-# ================ bonbast live ================
 @cli.group(invoke_without_command=True)
 @click.pass_context
 def live(ctx):
+    """
+    CLI group command to handle live data commands.
+
+    :param ctx: Click context.
+    """
     if ctx.invoked_subcommand is None:
         print('Show full table with live prices / up and down arrows')
     pass
 
 
-# ================ bonbast live simple ================
 @live.command('simple')
 @click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.option(
@@ -104,6 +124,12 @@ def live(ctx):
     callback=parse_show_only,
 )
 def live_simple(interval, show_only):
+    """
+    CLI command to display live simple text data for currencies, coins, or golds.
+
+    :param interval: The refresh interval in seconds.
+    :param show_only: Filter for showing only specified currencies, coins, or golds.
+    """
     old_collections = (None, None, None)
     with Live(auto_refresh=False) as live:
         while True:
@@ -130,9 +156,6 @@ def live_simple(interval, show_only):
             time.sleep(interval)
 
 
-# ================ bonbast live currency ================
-# todo: Make sure that the table scroll when updating. Also we can add the newest one to the top.
-# todo: research on how to add delta of the price change (if done, also add to "live simple" command)
 @live.command('currency')
 @click.option('-i', '--interval', type=click.IntRange(min=1), default=30, help='Interval in seconds')
 @click.argument(
@@ -142,6 +165,12 @@ def live_simple(interval, show_only):
     )
 )
 def live_currency(interval, currency):
+    """
+    CLI command to display live data for a specific currency, coin, or gold.
+
+    :param interval: The refresh interval in seconds.
+    :param currency: The currency, coin, or gold code.
+    """
     table = Table()
     first_time = True
     old_model = None
@@ -200,7 +229,6 @@ def live_currency(interval, currency):
             time.sleep(interval)
 
 
-# ================ bonbast convert ================
 @cli.command()
 @click.option('-s', '--source', type=click.Choice(Currency.VALUES, case_sensitive=False))
 @click.option('-d', '--destination', type=click.Choice(Currency.VALUES, case_sensitive=False))
@@ -209,6 +237,16 @@ def live_currency(interval, currency):
 @click.option('--only-sell', is_flag=True, default=False, help='Only show sell price')
 @click.pass_context
 def convert(ctx, source, destination, amount, only_buy, only_sell):
+    """
+    CLI command to convert an amount from one currency to another.
+
+    :param ctx: Click context.
+    :param source: Source currency code.
+    :param destination: Destination currency code.
+    :param amount: Amount to convert.
+    :param only_buy: Flag to show only buy price.
+    :param only_sell: Flag to show only sell price.
+    """
     if source is None and destination is None:
         raise click.BadOptionUsage('', 'Please specify source or destination currency')
 
@@ -236,7 +274,6 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
         click.echo(f'{buy} / {sell}')
 
 
-# ================ bonbast history ================
 @cli.command()
 @click.option(
     '--date',
@@ -248,6 +285,14 @@ def convert(ctx, source, destination, amount, only_buy, only_sell):
 @click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
 @click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
 def history(date, is_json, pretty, expanded):
+    """
+    CLI command to display historical prices for a specific date.
+
+    :param date: The date for which to retrieve prices.
+    :param is_json: Flag to output in JSON format.
+    :param pretty: Flag for pretty printing the output.
+    :param expanded: Flag to expand all fields in the output.
+    """
     currencies_list, coins_list = get_history(date)
     currencies_list, coins_list = filter_valids(currencies_list, coins_list)
 
@@ -259,7 +304,6 @@ def history(date, is_json, pretty, expanded):
         print_json(currencies_list, coins_list, pretty=pretty, expanded=expanded)
 
 
-# ================ bonbast export ================
 @cli.command()
 @click.option('--pretty', is_flag=True, default=False, help='Pretty print the output')
 @click.option('--expanded', is_flag=True, default=False, help='Tries to expand the JSON')
@@ -269,6 +313,13 @@ def history(date, is_json, pretty, expanded):
     callback=parse_show_only,
 )
 def export(pretty, expanded, show_only):
+    """
+    CLI command to export current prices to JSON format.
+
+    :param pretty: Flag for pretty printing the output.
+    :param expanded: Flag to expand all fields in the output.
+    :param show_only: Filter for showing only specified currencies, coins, or golds.
+    """
     currencies_list, coins_list, golds_list = get_prices(show_only)
     print_json(currencies_list, coins_list, golds_list, pretty=pretty, expanded=expanded)
 

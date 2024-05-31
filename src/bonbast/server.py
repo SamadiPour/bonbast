@@ -18,6 +18,12 @@ BUY = '2'
 
 
 def int_try_parse(value) -> Optional[int]:
+    """
+    Attempts to convert a string value to an integer, returning None if conversion fails or results in 0.
+    
+    :param value: The string value to convert.
+    :return: The converted integer or None.
+    """
     try:
         parsed = int(value)
         return None if parsed == 0 else parsed
@@ -26,11 +32,11 @@ def int_try_parse(value) -> Optional[int]:
 
 
 def get_token_from_main_page():
-    """ This function gets a token from main page of bonbast.com
-    This token should be saved somewhere because we are going to need it when we want to load pricest
-
-    param dont_raise_error: It's on False by default. If you pass True it won't raise error because of connection problems.
-        It will return False instead.
+    """
+    Retrieves a token from the main page of bonbast.com.
+    
+    :return: The retrieved token.
+    :raises SystemExit: If an HTTP error occurs or the token is not found.
     """
     cookies = {
         'cookieconsent_status': 'true',
@@ -70,12 +76,12 @@ def get_token_from_main_page():
 
 
 def get_prices_from_api(token: str) -> Tuple[List[Currency], List[Coin], List[Gold]]:
-    """ Gets the prices' data from API using
-
-    param token: You should pass the token that you got from get_token_from_main_page
-
-    param dont_raise_error: It's on False by default. If you pass True it won't raise error because of connection problems.
-        It will return False instead.
+    """
+    Retrieves currency, coin, and gold prices from the bonbast API using a provided token.
+    
+    :param token: The token to use for the API request.
+    :return: A tuple containing lists of Currency, Coin, and Gold objects.
+    :raises SystemExit: If an HTTP error occurs or the API indicates the token is expired.
     """
     cookies = {
         'cookieconsent_status': 'true',
@@ -150,9 +156,14 @@ def get_graph_data(
         end_date: datetime = datetime.today(),
 ) -> Dict[datetime, int]:
     """
-        This function will make a request to bonbast.com/graph and make them in two array.
+    Retrieves historical price data from bonbast.com/graph for a specified currency within a date range.
+    
+    :param currency: The currency code.
+    :param start_date: The start date of the range.
+    :param end_date: The end date of the range.
+    :return: A dictionary mapping dates to prices.
+    :raises SystemExit: If an HTTP error occurs.
     """
-
     headers = {
         'authority': 'bonbast.com',
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -201,6 +212,13 @@ def get_graph_data(
 
 
 def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> Tuple[List[Currency], List[Coin]]:
+    """
+    Retrieves historical currency and coin prices for a specified date.
+    
+    :param date: The date for which to retrieve prices.
+    :return: A tuple containing lists of Currency and Coin objects.
+    :raises SystemExit: If the date is out of the valid range or an HTTP error occurs.
+    """
     if date.date() < datetime(2012, 10, 9).date():
         raise SystemExit('Error: date is too far in the past. Date must be greater than 2012-10-09')
 
@@ -261,6 +279,6 @@ def get_history(date: datetime = datetime.today() - timedelta(days=1)) -> Tuple[
 
 class ResetAPIError(Exception):
     """
-    This exception is raised when the token is expired, and you have to get new one.
+    Exception raised when the API token is expired and a new token is required.
     """
     pass

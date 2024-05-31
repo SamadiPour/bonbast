@@ -8,22 +8,35 @@ except:  # noqa
     from src.bonbast.helpers.utils import Singleton
 
 
-class StorageManager(object):
+class StorageManager(object, metaclass=Singleton):
+    """
+    Manages storage operations for the application, such as saving and loading files.
+
+    Attributes:
+        file_path (pathlib.Path): The path to the file being managed.
+    """
+
     def __init__(self, file_path: pathlib.Path):
+        """
+        Initializes the StorageManager with a specific file path.
+
+        Args:
+            file_path (pathlib.Path): The path to the file to manage.
+        """
         self.storage_path = StorageManager.get_app_directory()
         self.file_path = file_path
 
     @staticmethod
     def get_app_directory() -> pathlib.Path:
-        """ Returns a directory path
-        data directory is where persistent application data can be stored.
+        """
+        Determines the appropriate application data directory based on the operating system.
         - linux: ~/.local/share
         - macOS: ~/Library/Application Support
         - windows: C:/Users/<USER>/AppData/Roaming
 
-        the final directory is where application data can be stored.
+        Returns:
+            pathlib.Path: The path to the application data directory.
         """
-
         home = pathlib.Path.home()
 
         if sys.platform == "win32":
@@ -38,7 +51,11 @@ class StorageManager(object):
         return data_dir / "bonbast"
 
     def save_file(self, content: str) -> None:
-        """ Gets token it in data directory
+        """
+        Saves content to a file at the specified file path.
+
+        Args:
+            content (str): The content to save to the file.
         """
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
@@ -46,15 +63,21 @@ class StorageManager(object):
             f.write(content)
 
     def load_file(self) -> str:
-        """ Loads the saved token from datadir.
-        Returns token, datetime
-        Raise FileNotFoundError if no token was founded
+        """
+        Loads content from a file at the specified file path.
+
+        Returns:
+            str: The content loaded from the file.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
         """
         with open(self.file_path, 'r') as f:
             return f.read()
 
     def delete_file(self) -> None:
-        """ Delete the saved token from datadir
+        """
+        Deletes the file at the specified file path.
         """
         try:
             os.remove(self.file_path)
