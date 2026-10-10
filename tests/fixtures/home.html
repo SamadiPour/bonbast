@@ -1,0 +1,19 @@
+<!-- Excerpt of https://bonbast.com/ (2026-10-04): the script that requests live prices. -->
+<html>
+<body>
+<script type="text/javascript">
+var is_date = ['last_modified', 'year', 'month', 'day', 'hour', 'minute', 'second', 'weekday'];
+function get_data(){
+$.post('/json', {param: "fef9596724a94ad83fb75df5ad468b96,NQvYk,2026-10-04-18-15-43"}, function(json) {
+    $.each(json,function(key, value){
+        if (key == 'reset') {
+          location.reload();
+        }
+    });
+},'json');
+setTimeout(get_data,30000);
+}
+get_data();
+</script>
+</body>
+</html>

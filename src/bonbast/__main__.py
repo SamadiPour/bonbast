@@ -1,10 +1,4 @@
-from bonbast import main
+from bonbast.cli import cli
 
-
-def run() -> None:
-    main.cli()
-
-
-# NEEDED FOR `python -m bonbast`
-if __name__ == '__main__':
-    run()
+if __name__ == "__main__":
+    cli(prog_name="bonbast")

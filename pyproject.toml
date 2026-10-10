@@ -1,57 +1,62 @@
-[build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "bonbast"
-version = "1.0.2"
-description = "Get currencies exchange rates for IRR from Bonbast.com"
+version = "2.0.0"
+description = "Gold prices and Iranian Rial (IRR) exchange rates from bonbast.com, in your terminal"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     { name = "Amir Hossein SamadiPour", email = "samadipoor2@gmail.com" },
     { name = "Alireza Azadi", email = "alireza_azadi@hotmail.com" },
     { name = "Iliya Aghamajidi", email = "dozheiny@gmail.com" },
     { name = "Parsa Shahmaleki", email = "parsampsh@gmail.com" },
 ]
-license = { file = "LICENSE" }
+keywords = ["bonbast", "iran", "rial", "toman", "exchange rates", "gold", "cli"]
 classifiers = [
-    "License :: OSI Approved :: MIT License",
-    "Programming Language :: Python",
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Office/Business :: Financial",
+    "Typing :: Typed",
 ]
-keywords = ["bonbast", "IRR Exchange rates"]
+requires-python = ">=3.10"
 dependencies = [
-    "requests >= 2.28.0",
-    "rich >= 12.4.4",
-    "beautifulsoup4 >= 4.11.1",
-    "bs4",
-    "click >= 8.1.3",
+    "beautifulsoup4>=4.11",
+    "click>=8.1",
+    "platformdirs>=3.0",
+    "requests>=2.31",
+    "rich>=13.0",
 ]
-requires-python = ">=3.7"
-
-[project.optional-dependencies]
-build = ["build", "twine", "bumpver"]
 
 [project.scripts]
-bonbast = "bonbast.__main__:run"
+bonbast = "bonbast.cli:cli"
 
 [project.urls]
-repository = "https://github.com/SamadiPour/bonbast"
-#documentation = ""
+Homepage = "https://github.com/SamadiPour/bonbast"
+Repository = "https://github.com/SamadiPour/bonbast"
+Issues = "https://github.com/SamadiPour/bonbast/issues"
 
-[tool.bumpver]
-current_version = "1.0.2"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "bump version {old_version} -> {new_version}"
-commit = true
-tag = true
-push = false
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "responses>=0.25",
+]
 
-[tool.bumpver.file_patterns]
-"pyproject.toml" = [
-    'current_version = "{version}"',
-    'version = "{version}"',
-]
-"src/bonbast/__init__.py" = [
-    'bonbast_version = "{version}"',
-]
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
