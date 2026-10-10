@@ -143,6 +143,8 @@ bonbast graph eur --start-date 2023-02-12 --end-date 2023-05-09
 bonbast graph eur --json   # {"2023-02-12": 590000, ...}
 ```
 
+![bonbast_graph](https://github.com/user-attachments/assets/a4d48a1a-3b2a-4db9-8ef6-9aae49dfd4fe)
+
 ### Convert
 
 Converts an amount of a currency to Toman with `-s` / `--source`:
