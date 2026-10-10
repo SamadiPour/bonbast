@@ -5,9 +5,8 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable, Mapping
 from datetime import date
+from html.parser import HTMLParser
 from typing import Any, TypeVar
-
-from bs4 import BeautifulSoup
 
 from .catalog import COINS, CURRENCIES, GOLDS, Unit
 from .errors import ParseError
@@ -77,8 +76,7 @@ def parse_archive(html: str) -> Prices:
     currencies: list[Currency] = []
     coins: list[Coin] = []
 
-    for table in BeautifulSoup(html, "html.parser").find_all("table"):
-        rows = [[cell.get_text(" ", strip=True) for cell in row.find_all(["td", "th"])] for row in table.find_all("tr")]
+    for rows in _tables(html):
         if not rows or not rows[0]:
             continue
         kind = _squash(rows[0][0])
@@ -117,6 +115,60 @@ def parse_graph(html: str) -> dict[date, int]:
     if len(days) != len(prices):
         raise ParseError("bonbast.com returned inconsistent chart data")
     return dict(zip(days, prices))
+
+
+def _tables(html: str) -> list[list[list[str]]]:
+    """Return the text of every table cell, as ``tables[table][row][cell]``."""
+    parser = _TableParser()
+    parser.feed(html)
+    parser.close()
+    return parser.tables
+
+
+class _TableParser(HTMLParser):
+    """Collects cell text like BeautifulSoup's ``get_text(" ", strip=True)``: text runs split at tags, stripped, joined."""
+
+    _STRUCTURE = frozenset({"table", "tr", "td", "th"})
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.tables: list[list[list[str]]] = []
+        self._cell: list[str] | None = None  # text runs of the open cell
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag not in self._STRUCTURE:
+            self._split_text()
+            return
+        # A new table, row or cell also closes a cell the page left open.
+        self._close_cell()
+        if tag == "table":
+            self.tables.append([])
+        elif tag == "tr" and self.tables:
+            self.tables[-1].append([])
+        elif tag in ("td", "th") and self.tables and self.tables[-1]:
+            self._cell = [""]
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self._STRUCTURE:
+            self._close_cell()
+        else:
+            self._split_text()
+
+    def handle_comment(self, data: str) -> None:
+        self._split_text()
+
+    def handle_data(self, data: str) -> None:
+        if self._cell is not None:
+            self._cell[-1] += data
+
+    def _split_text(self) -> None:
+        if self._cell is not None:
+            self._cell.append("")
+
+    def _close_cell(self) -> None:
+        if self._cell is not None:
+            self.tables[-1][-1].append(" ".join(text.strip() for text in self._cell if text.strip()))
+            self._cell = None
 
 
 def _number(value: Any) -> float | None:
